@@ -1,1 +1,22 @@
+# Entorno virtual
+venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.py[cod]
+
+# Configuración sensible
 .env
+
+# Bases de datos
+instance/
+
+# Documentos generados automáticamente
+docs/
+scripts/docs/
+
+# Archivos temporales de trabajo
+tmp/
+
+# Caché de redmine
+redmine/cache/
