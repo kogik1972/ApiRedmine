@@ -53,7 +53,7 @@ def obtener_emails_desde_redmine(issue_id):
             data = get_json(f"projects/{id_proyecto}.json?include=custom_fields")
             campos = data["project"]["custom_fields"]
             campos_dict = {campo["name"]: campo["value"] for campo in campos}
-            nombre_comunidad = (f"RUT_{ campos_dict.get("Comunidad") }")
+            nombre_comunidad = (f"RUT_{campos_dict.get('Comunidad')}")
             #print(f"nombre_comunidad:{nombre_comunidad}")
 
             #campo_cf = get_custom_field_by_name(nombre_comunidad)
