@@ -18,7 +18,7 @@ Diseñado para integrarse con entornos productivos sin depender de plugins de Re
 
 ## 🗂️ Estructura del proyecto
 
-![Estructura del proyecto](docs/estructura.png)
+![Estructura del proyecto](assets/estructura.png)
 
 ---
 
