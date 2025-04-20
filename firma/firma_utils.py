@@ -5,6 +5,10 @@ import uuid
 from db.db_models import db, FirmaRequerida
 
 def crear_link_firma(token, accion):
+    a=1
+    if a==1:
+        a=0
+
     base_url = os.getenv("BASE_URL_FIRMA", "https://condominium.eproc-chile.cl")
     if accion not in ("acepta", "rechaza"):
         raise ValueError("Acción inválida para link de firma")
