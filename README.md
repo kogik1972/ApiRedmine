@@ -17,17 +17,7 @@ Diseñado para integrarse con entornos productivos sin depender de plugins de Re
 ---
 
 ## 🗂️ Estructura del proyecto
-
-ApiRedmine/ 
-    ├── db/ # Modelos y lógica de base de datos 
-    ├── firma/ # Lógica de firma electrónica 
-    ├── redmine/ # Conectores y cacheadores de Redmine 
-    ├── scripts/ # Manejo de archivos, almacenamiento en docs/ 
-    ├── test/ # Scripts de prueba 
-    ├── tmp/ # Documentos entrantes 
-    ├── utils/ # Parsers y utilidades comunes 
-    ├── requirements.txt # Dependencias del proyecto 
-    ├── .env # Variables sensibles (no versionado)
+ApiRedmine/ ├── db/ # Modelos y lógica de base de datos ├── firma/ # Lógica de firma electrónica ├── redmine/ # Conectores y caché de Redmine ├── scripts/ # Manejo de archivos y directorio docs/ ├── test/ # Scripts de prueba ├── tmp/ # Documentos entrantes ├── utils/ # Parsers y utilidades comunes ├── .env # Variables sensibles (no versionado) ├── requirements.txt # Dependencias del proyecto └── .gitignore # Exclusiones del control de versiones
 
 ---
 
