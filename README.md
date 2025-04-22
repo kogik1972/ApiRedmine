@@ -65,7 +65,7 @@ MAIL_DEFAULT_SENDER=correo@tuempresa.cl
 BASE_URL_FIRMA=https://firma.ejemplo.cl
 
 # Conexión a BD si se usa otra
-SQLALCHEMY_DATABASE_URI=sqlite:///instance/firma.db
+DATABASE_URL=sqlite:///instance/firma.db
 
 
 #📄 Ejecución básica

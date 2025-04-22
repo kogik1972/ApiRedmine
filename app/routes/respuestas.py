@@ -5,6 +5,7 @@ from itsdangerous import URLSafeSerializer
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import traceback
 
 # Cargar variables de entorno
 load_dotenv()
@@ -43,7 +44,7 @@ def procesar_respuesta(token):
         estados = [f.estado for f in documento.firmas]
 
         if "rechazado" in estados:
-            documento.estado_firma = "no firmado"
+            documento.estado_firma = "rechazado"
         elif all(e == "aceptado" for e in estados):
             documento.estado_firma = "firmado"
             # 🔜 Aquí puedes llamar a estampado de PDF o envío de correo con documento firmado
@@ -52,4 +53,4 @@ def procesar_respuesta(token):
         return render_template("gracias.html", estado=firma.estado)
 
     except Exception as e:
-        return f"Token inválido o error: {e}", 400
+         return f"<pre>{traceback.format_exc()}</pre>", 400

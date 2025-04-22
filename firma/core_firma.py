@@ -28,7 +28,7 @@ def parse_args():
 def create_app():
     app = Flask(__name__)
     load_dotenv()
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI", "sqlite:///firma.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
     return app
