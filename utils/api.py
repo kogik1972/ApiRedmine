@@ -1,11 +1,18 @@
-# api.py
-
 import os
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-REDMINE_URL = os.getenv("REDMINE_URL")
+
+# Detectar entorno
+modo = os.getenv("MODO_ENTORNO", "desarrollo")
+
+# Elegir URL según entorno
+if modo == "produccion":
+    REDMINE_URL = os.getenv("REDMINE_URL_PROD")
+else:
+    REDMINE_URL = os.getenv("REDMINE_URL_DEV")
+
 REDMINE_API_KEY = os.getenv("REDMINE_API_KEY")
 
 def get_json(path):
@@ -15,7 +22,7 @@ def get_json(path):
     """
     headers = { "X-Redmine-API-Key": REDMINE_API_KEY }
     url = f"{REDMINE_URL.rstrip('/')}/{path.lstrip('/')}"
-    
+
     try:
         resp = requests.get(url, headers=headers)
         resp.raise_for_status()

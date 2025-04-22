@@ -1,10 +1,13 @@
 import os
 import requests
 from dotenv import load_dotenv
-
-# Cargar variables desde .env
 load_dotenv()
-REDMINE_URL = os.getenv("REDMINE_URL")
+modo = os.getenv("MODO_ENTORNO", "desarrollo")
+if modo == "produccion":
+    REDMINE_URL = os.getenv("REDMINE_URL_PROD")
+else:
+    REDMINE_URL = os.getenv("REDMINE_URL_DEV")
+
 API_KEY = os.getenv("REDMINE_API_KEY")
 
 # Cache interno para evitar múltiples llamadas a Redmine
