@@ -1,7 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-
-db = SQLAlchemy()
+from app import db
 
 class Documento(db.Model):
     __tablename__ = 'documentos'

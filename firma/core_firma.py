@@ -11,7 +11,8 @@ from flask import Flask
 from dotenv import load_dotenv
 from scripts.archivo_manager import mover_a_docs
 from redmine.redmine_client import obtener_emails_desde_redmine
-from db.db_models import db, Documento
+from app import db
+from db.db_models import Documento
 from firma.firma_utils import registrar_firmante
 from firma.firma_mailer import enviar_correo_firma
 

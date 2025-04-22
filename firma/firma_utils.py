@@ -2,11 +2,18 @@
 
 import os
 import uuid
-from db.db_models import db, FirmaRequerida
+from app import db                          # ✅ Instancia oficial de SQLAlchemy
+from db.db_models import FirmaRequerida     # ✅ Modelo definido en el módulo correcto
+from dotenv import load_dotenv
+load_dotenv()
+modo = os.getenv("MODO_ENTORNO", "desarrollo")  # 👈 detecta entorno actual
+if modo == "produccion":
+    base_url = os.getenv("FRONT_DOMAIN_PROD", "https://condominium.eproc-chile.cl")
+else:
+    base_url = os.getenv("FRONT_DOMAIN_LOCAL", "http://127.0.0.1:5000")
 
 def crear_link_firma(token, accion):
     
-    base_url = os.getenv("BASE_URL_FIRMA", "https://condominium.eproc-chile.cl")
     if accion not in ("acepta", "rechaza"):
         raise ValueError("Acción inválida para link de firma")
 
