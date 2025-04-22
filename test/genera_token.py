@@ -18,7 +18,12 @@ DOMINIO = dominio
 serializer = URLSafeSerializer(SECRET_KEY)
 
 # Cambia estos valores según el registro que ya exista en tu BD
-firma_id = 4741
+try:
+    firma_id = int(input("🔢 Ingresa el firma_id existente en la BD: ").strip())
+except ValueError:
+    print("⚠️ Debes ingresar un número entero válido.")
+    exit(1)
+    
 accion_aceptar = "aceptar"
 accion_rechazar = "rechazar"
 
