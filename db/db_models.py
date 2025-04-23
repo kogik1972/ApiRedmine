@@ -9,7 +9,8 @@ class Documento(db.Model):
     path_pdf = db.Column(db.String(512), nullable=False)
     fecha_generacion = db.Column(db.DateTime, default=datetime.utcnow)
     estado_firma = db.Column(db.String(20), default='pendiente')  # pendiente, firmado, rechazado
-
+    issue_id = db.Column(db.Integer, nullable=True)
+    
     firmas = db.relationship('FirmaRequerida', backref='documento', lazy=True)
 
     def __repr__(self):
