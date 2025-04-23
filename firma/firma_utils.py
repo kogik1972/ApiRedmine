@@ -31,17 +31,17 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo):
         rut=rut,
         email=email,
         tipo=tipo,
-        estado='pendiente'
+        estado='pendiente',
+        token = 'relleno'
     )
     db.session.add(firma)
     db.session.commit()
 
-    # Token firmado para aceptar
+    # Token 
     token_aceptar = serializer.dumps({"firma_id": firma.id, "accion": "aceptar"})
-    # Token firmado para rechazar
     token_rechazar = serializer.dumps({"firma_id": firma.id, "accion": "rechazar"})
 
-    # Guardamos solo uno (por compatibilidad con modelo actual)
+    # Asignamos token real
     firma.token = token_aceptar
     db.session.commit()
 
