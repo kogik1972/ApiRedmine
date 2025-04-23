@@ -41,7 +41,7 @@ FRONT_DOMAIN_PROD = os.getenv("FRONT_DOMAIN_PROD")
 # === Validaciones mínimas obligatorias ===
 faltantes = []
 if not REDMINE_URL: faltantes.append("REDMINE_URL")
-if not REDMINE_API_KEY: faltantes.append("REDMINE_API_KEY")
+if not API_KEY: faltantes.append("REDMINE_API_KEY")
 if not DATABASE_URL: faltantes.append("DATABASE_URL")
 if not SECRET_KEY: faltantes.append("SECRET_KEY")
 
