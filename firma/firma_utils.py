@@ -27,13 +27,13 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo, issue_id):
 
     firma = FirmaRequerida(
         documento_id=documento_id,
-        issue_id,
         nombre=nombre,
         rut=rut,
         email=email,
         tipo=tipo,
         estado='pendiente',
-        token = 'relleno'
+        token = 'relleno',
+        issue_id = issue_id
     )
     db.session.add(firma)
     db.session.commit()
