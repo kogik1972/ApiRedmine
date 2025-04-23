@@ -12,7 +12,7 @@ ES_PRODUCCION = ENTORNO == "produccion"
 
 # === Redmine ===
 REDMINE_URL = os.getenv("REDMINE_URL")
-REDMINE_API_KEY = os.getenv("REDMINE_API_KEY")
+API_KEY = os.getenv("REDMINE_API_KEY")
 
 # === Base de datos local (SQLite vía SQLAlchemy) ===
 DATABASE_URL = os.getenv("DATABASE_URL")
