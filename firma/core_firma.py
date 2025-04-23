@@ -39,26 +39,26 @@ def main():
     app = create_app()
 
     with app.app_context():
-        db.create_all()  # 👈 Esto asegura que las tablas estén actualizadas
+        db.create_all()  # asegúrate de que las tablas estén listas
 
-    ruta_original = os.path.join(ROOT_DIR   , args.directorio, args.nombre_documento)
+        ruta_original = os.path.join(ROOT_DIR, args.directorio, args.nombre_documento)
 
-    if not os.path.isfile(ruta_original):
-        print(f"❌ Archivo no encontrado: {ruta_original}")
-        return
+        if not os.path.isfile(ruta_original):
+            print(f"❌ Archivo no encontrado: {ruta_original}")
+            return
 
-    ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
+        ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
 
-    datos_firmantes = obtener_emails_desde_redmine(args.issue_id)
-    if not datos_firmantes:
-        print("❌ No se pudieron obtener los datos de los firmantes. Proceso abortado.")
-        return
+        datos_firmantes = obtener_emails_desde_redmine(args.issue_id)
+        if not datos_firmantes:
+            print("❌ No se pudieron obtener los datos de los firmantes. Proceso abortado.")
+            return
 
-    with app.app_context():
         # 1. Registrar documento
         documento = Documento(
             nombre=nombre_final,
-            path_pdf=os.path.join("docs", nombre_final)
+            path_pdf=os.path.join("docs", nombre_final),
+            issue_id=args.issue_id
         )
         db.session.add(documento)
         db.session.commit()
@@ -73,7 +73,6 @@ def main():
                 tipo=tipo,
                 issue_id=args.issue_id
             )
-
             firmante = resultado["firma"]
             enviar_correo_firma(firmante, documento)
 
