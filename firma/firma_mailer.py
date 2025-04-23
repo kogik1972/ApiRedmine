@@ -29,8 +29,8 @@ def enviar_correo_firma(firma, documento):
 
     with app.app_context():  # 👈 TODO ocurre DENTRO del contexto
 
-        link_acepta = crear_link_firma(firma.token, 'acepta')
-        link_rechaza = crear_link_firma(firma.token, 'rechaza')
+        link_aceptar = crear_link_firma(firma.token, 'aceptar')
+        link_rechazar = crear_link_firma(firma.token, 'rechazar')
 
         asunto = f"Firma requerida: {documento.nombre}"
         destinatario = firma.email
@@ -59,8 +59,8 @@ def enviar_correo_firma(firma, documento):
             <p>Ha sido asignado como <strong>{firma.tipo}</strong> y se requiere su firma electrónica para el documento:</p>
             <p><strong>{documento.nombre}</strong></p>
             <div style="margin: 25px 0;">
-                <a href="{link_acepta}" class="btn btn-aceptar">✅ Aceptar y Firmar</a>
-                <a href="{link_rechaza}" class="btn btn-rechazar">❌ Rechazar Documento</a>
+                <a href="{link_aceptar}" class="btn btn-aceptar">✅ Aceptar y Firmar</a>
+                <a href="{link_rechazar}" class="btn btn-rechazar">❌ Rechazar Documento</a>
             </div>
             <p class="footer">Este enlace es único y no debe compartirse.<br>
             Atentamente,<br>El equipo de Condominium</p>
@@ -72,8 +72,8 @@ def enviar_correo_firma(firma, documento):
 
 Ha sido asignado como {firma.tipo} y se requiere su firma electrónica para el documento: {documento.nombre}
 
-✔️ Firmar: {link_acepta}
-❌ Rechazar: {link_rechaza}
+✔️ Firmar: {link_aceptar}
+❌ Rechazar: {link_rechazar}
 
 Este enlace es único y no debe compartirse.
 
