@@ -65,15 +65,16 @@ def main():
 
         # 2. Registrar firmantes y enviar correos
         for tipo, persona in datos_firmantes.items():
-            token = registrar_firmante(
+            resultado = registrar_firmante(
                 documento_id=documento.id,
                 nombre=persona["nombre"],
                 rut=persona["rut"],
                 email=persona["email"],
-                tipo=tipo
+                tipo=tipo,
+                issue_id=args.issue_id
             )
 
-            firmante = documento.firmas[-1]  # Último agregado
+            firmante = resultado["firma"]
             enviar_correo_firma(firmante, documento)
 
         print(f"✅ Documento registrado en BD con ID {documento.id}")
