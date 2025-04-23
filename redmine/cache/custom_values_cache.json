@@ -1,0 +1,261 @@
+{
+  "Issue:4679": [
+    {
+      "custom_field_id": 57,
+      "field_name": "trab_nombre",
+      "value": "Javier Alvarez Godoy"
+    },
+    {
+      "custom_field_id": 58,
+      "field_name": "trab_rut",
+      "value": "8.131.513-2"
+    },
+    {
+      "custom_field_id": 97,
+      "field_name": "trab_valor_sueldo",
+      "value": "500000"
+    },
+    {
+      "custom_field_id": 101,
+      "field_name": "trab_valor_colacion",
+      "value": "50000"
+    },
+    {
+      "custom_field_id": 102,
+      "field_name": "trab_valor_movilizacion",
+      "value": "60000"
+    },
+    {
+      "custom_field_id": 162,
+      "field_name": "trab_afp",
+      "value": "IPS"
+    },
+    {
+      "custom_field_id": 163,
+      "field_name": "trab_salud",
+      "value": "COLMENA GOLDEN CROSS (COLMENA)"
+    },
+    {
+      "custom_field_id": 170,
+      "field_name": "trab_dir_comuna",
+      "value": ""
+    },
+    {
+      "custom_field_id": 178,
+      "field_name": "trab_nacionalidad",
+      "value": "Chilena"
+    },
+    {
+      "custom_field_id": 188,
+      "field_name": "funcion_trabajador",
+      "value": "Conserje"
+    },
+    {
+      "custom_field_id": 193,
+      "field_name": "trab_fecha_ncto",
+      "value": "1980-06-06"
+    },
+    {
+      "custom_field_id": 194,
+      "field_name": "trab_contrato_ini",
+      "value": "2025-04-09"
+    },
+    {
+      "custom_field_id": 195,
+      "field_name": "trab_contrato_fin",
+      "value": ""
+    },
+    {
+      "custom_field_id": 210,
+      "field_name": "trab_email",
+      "value": "jp.alvarez.o@gmail.com"
+    },
+    {
+      "custom_field_id": 214,
+      "field_name": "Turno",
+      "value": "Lunes a Viernes de 8:00 a 18:00"
+    },
+    {
+      "custom_field_id": 215,
+      "field_name": "trab_banco",
+      "value": "Banco BICE"
+    },
+    {
+      "custom_field_id": 216,
+      "field_name": "trab_tipo_cuenta",
+      "value": "Vista"
+    },
+    {
+      "custom_field_id": 217,
+      "field_name": "trab_num_cuenta",
+      "value": "1304"
+    },
+    {
+      "custom_field_id": 235,
+      "field_name": "trab_nombres",
+      "value": "Javier"
+    },
+    {
+      "custom_field_id": 236,
+      "field_name": "trab_primer_apellido",
+      "value": "Alvarez"
+    },
+    {
+      "custom_field_id": 237,
+      "field_name": "trab_segundo_apellido",
+      "value": "Godoy"
+    },
+    {
+      "custom_field_id": 245,
+      "field_name": "trab_forma_pago",
+      "value": "Transferencia"
+    },
+    {
+      "custom_field_id": 246,
+      "field_name": "trab_foto",
+      "value": ""
+    },
+    {
+      "custom_field_id": 250,
+      "field_name": "trab_telefono",
+      "value": "56912345678"
+    },
+    {
+      "custom_field_id": 270,
+      "field_name": "funcion_trabajador_turno",
+      "value": "Domingo y Festivos"
+    },
+    {
+      "custom_field_id": 329,
+      "field_name": "DireccionTrabajador",
+      "value": "Lago Yelcho 05207 "
+    }
+  ],
+  "Issue:4472": [
+    {
+      "custom_field_id": 57,
+      "field_name": "trab_nombre",
+      "value": "Juan Pizarro Contreras"
+    },
+    {
+      "custom_field_id": 58,
+      "field_name": "trab_rut",
+      "value": "19.619.167-4"
+    },
+    {
+      "custom_field_id": 97,
+      "field_name": "trab_valor_sueldo",
+      "value": "505000"
+    },
+    {
+      "custom_field_id": 101,
+      "field_name": "trab_valor_colacion",
+      "value": "19000"
+    },
+    {
+      "custom_field_id": 102,
+      "field_name": "trab_valor_movilizacion",
+      "value": "0"
+    },
+    {
+      "custom_field_id": 162,
+      "field_name": "trab_afp",
+      "value": "IPS"
+    },
+    {
+      "custom_field_id": 163,
+      "field_name": "trab_salud",
+      "value": "NUEVA MASVIDA ISAPRE (MASVIDA)"
+    },
+    {
+      "custom_field_id": 178,
+      "field_name": "trab_nacionalidad",
+      "value": "Chilena"
+    },
+    {
+      "custom_field_id": 188,
+      "field_name": "funcion_trabajador",
+      "value": "Conserje"
+    },
+    {
+      "custom_field_id": 193,
+      "field_name": "trab_fecha_ncto",
+      "value": "1988-05-05"
+    },
+    {
+      "custom_field_id": 194,
+      "field_name": "trab_contrato_ini",
+      "value": "2025-04-08"
+    },
+    {
+      "custom_field_id": 195,
+      "field_name": "trab_contrato_fin",
+      "value": ""
+    },
+    {
+      "custom_field_id": 210,
+      "field_name": "trab_email",
+      "value": "mail@mail.com"
+    },
+    {
+      "custom_field_id": 214,
+      "field_name": "Turno",
+      "value": "Lunes a Sábado 08:00 - 17:00 / 08:00 - 14:00"
+    },
+    {
+      "custom_field_id": 215,
+      "field_name": "trab_banco",
+      "value": "Banco Ripley"
+    },
+    {
+      "custom_field_id": 216,
+      "field_name": "trab_tipo_cuenta",
+      "value": "Corriente"
+    },
+    {
+      "custom_field_id": 217,
+      "field_name": "trab_num_cuenta",
+      "value": "13021138"
+    },
+    {
+      "custom_field_id": 235,
+      "field_name": "trab_nombres",
+      "value": "Juan"
+    },
+    {
+      "custom_field_id": 236,
+      "field_name": "trab_primer_apellido",
+      "value": "Pizarro"
+    },
+    {
+      "custom_field_id": 237,
+      "field_name": "trab_segundo_apellido",
+      "value": "Contreras"
+    },
+    {
+      "custom_field_id": 245,
+      "field_name": "trab_forma_pago",
+      "value": "Transferencia"
+    },
+    {
+      "custom_field_id": 246,
+      "field_name": "trab_foto",
+      "value": ""
+    },
+    {
+      "custom_field_id": 250,
+      "field_name": "trab_telefono",
+      "value": "56898765432"
+    },
+    {
+      "custom_field_id": 270,
+      "field_name": "funcion_trabajador_turno",
+      "value": "Domingos"
+    },
+    {
+      "custom_field_id": 329,
+      "field_name": "DireccionTrabajador",
+      "value": "Mirlos 10 "
+    }
+  ]
+}
