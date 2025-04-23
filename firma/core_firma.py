@@ -39,7 +39,7 @@ def main():
     app = create_app()
 
     with app.app_context():
-        db.create_all()  # asegúrate de que las tablas estén listas
+        db.create_all()
 
         ruta_original = os.path.join(ROOT_DIR, args.directorio, args.nombre_documento)
 
@@ -73,6 +73,7 @@ def main():
                 tipo=tipo,
                 issue_id=args.issue_id
             )
+
             firmante = resultado["firma"]
             enviar_correo_firma(firmante, documento)
 
