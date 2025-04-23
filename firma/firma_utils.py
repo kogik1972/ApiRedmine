@@ -1,51 +1,53 @@
 # firma/firma_utils.py
 
 import os
-import uuid
-from app import db                          # ✅ Instancia oficial de SQLAlchemy
-from db.db_models import FirmaRequerida     # ✅ Modelo definido en el módulo correcto
 from dotenv import load_dotenv
+from itsdangerous import URLSafeSerializer
+from app import db
+
 load_dotenv()
-modo = os.getenv("MODO_ENTORNO", "desarrollo")  # 👈 detecta entorno actual
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+serializer = URLSafeSerializer(SECRET_KEY)
+
+# Detectar dominio según entorno
+modo = os.getenv("MODO_ENTORNO", "desarrollo").lower()
 if modo == "produccion":
     base_url = os.getenv("FRONT_DOMAIN_PROD", "https://condominium.eproc-chile.cl")
 else:
     base_url = os.getenv("FRONT_DOMAIN_LOCAL", "http://127.0.0.1:5000")
 
 def crear_link_firma(token, accion):
-    
-    if accion not in ("acepta", "rechaza"):
+    if accion not in ("aceptar", "rechazar"):
         raise ValueError("Acción inválida para link de firma")
-
     return f"{base_url}/firmar?token={token}&accion={accion}"
 
-
 def registrar_firmante(documento_id, nombre, rut, email, tipo):
-    """
-    Registra un firmante en la base de datos con token único.
-
-    Args:
-        documento_id (int): ID del documento.
-        nombre (str): Nombre del firmante.
-        rut (str): RUT del firmante.
-        email (str): Email del firmante.
-        tipo (str): Tipo de firmante ('firmante' o 'responsable').
-
-    Returns:
-        str: Token generado para el firmante.
-    """
-    token = str(uuid.uuid4())
+    from db.db_models import FirmaRequerida
 
     firma = FirmaRequerida(
         documento_id=documento_id,
         nombre=nombre,
         rut=rut,
         email=email,
-        token=token,
-        tipo=tipo
+        tipo=tipo,
+        estado='pendiente'
     )
-
     db.session.add(firma)
     db.session.commit()
 
-    return token
+    # Token firmado para aceptar
+    token_aceptar = serializer.dumps({"firma_id": firma.id, "accion": "aceptar"})
+    # Token firmado para rechazar
+    token_rechazar = serializer.dumps({"firma_id": firma.id, "accion": "rechazar"})
+
+    # Guardamos solo uno (por compatibilidad con modelo actual)
+    firma.token = token_aceptar
+    db.session.commit()
+
+    # Devolver ambos enlaces para usar en el correo
+    return {
+        "firma": firma,
+        "link_aceptar": crear_link_firma(token_aceptar, "aceptar"),
+        "link_rechazar": crear_link_firma(token_rechazar, "rechazar"),
+    }
