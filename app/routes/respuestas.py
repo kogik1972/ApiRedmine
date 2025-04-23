@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+## respuestas.py
+from flask import Blueprint, render_template, request
 from app import db
 from db.db_models import FirmaRequerida
 from itsdangerous import URLSafeSerializer
@@ -17,20 +18,30 @@ respuestas_bp = Blueprint('respuestas', __name__)
 SECRET_KEY = os.getenv("SECRET_KEY")
 serializer = URLSafeSerializer(SECRET_KEY)
 
-@respuestas_bp.route("/respuesta_firma/<token>", methods=["GET"])
-def procesar_respuesta(token):
+@respuestas_bp.route("/firmar", methods=["GET"], strict_slashes=False)
+def procesar_respuesta():
     try:
+        # Obtener token y acción desde parámetros de query
+        token = request.args.get("token")
+        accion = request.args.get("accion")
+
+        if not token or not accion:
+            return "Faltan parámetros requeridos", 400
+
         # Decodificar el token
         data = serializer.loads(token)
         firma_id = data.get("firma_id")
-        accion = data.get("accion")  # "aceptar" o "rechazar"
+
+        # Validación cruzada entre token y parámetro
+        if data.get("accion") != accion:
+            return "La acción no coincide con el token", 400
 
         # Buscar firmante
         firma = FirmaRequerida.query.get(firma_id)
         if not firma:
             return "Firma no encontrada", 404
 
-        # Si ya respondió antes
+        # Ya respondió
         if firma.estado in ['aceptado', 'rechazado']:
             return render_template("ya_respondido.html", estado=firma.estado)
 
@@ -47,10 +58,11 @@ def procesar_respuesta(token):
             documento.estado_firma = "rechazado"
         elif all(e == "aceptado" for e in estados):
             documento.estado_firma = "firmado"
-            # 🔜 Aquí puedes llamar a estampado de PDF o envío de correo con documento firmado
+            # 🔜 Estampado PDF o correo con documento puede ir aquí
 
         db.session.commit()
+
         return render_template("gracias.html", estado=firma.estado)
 
     except Exception as e:
-         return f"<pre>{traceback.format_exc()}</pre>", 400
+        return f"<pre>{traceback.format_exc()}</pre>", 500

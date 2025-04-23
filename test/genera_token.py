@@ -5,33 +5,31 @@ from dotenv import load_dotenv
 from itsdangerous import URLSafeSerializer
 
 load_dotenv()
-modo = os.getenv("MODO_ENTORNO", "desarrollo")  # 👈 detecta entorno actual
+
+# Detectar entorno actual
+modo = os.getenv("MODO_ENTORNO", "desarrollo").lower()
 if modo == "produccion":
     dominio = os.getenv("FRONT_DOMAIN_PROD", "https://condominium.eproc-chile.cl")
 else:
     dominio = os.getenv("FRONT_DOMAIN_LOCAL", "http://127.0.0.1:5000")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-DOMINIO = dominio
-#DOMINIO = "http://127.0.0.1:5000"  # Cambia si vas a testear en producción
-
 serializer = URLSafeSerializer(SECRET_KEY)
 
-# Cambia estos valores según el registro que ya exista en tu BD
+# Solicita firma_id
 try:
     firma_id = int(input("🔢 Ingresa el firma_id existente en la BD: ").strip())
 except ValueError:
     print("⚠️ Debes ingresar un número entero válido.")
     exit(1)
-    
-accion_aceptar = "aceptar"
-accion_rechazar = "rechazar"
 
-token_aceptar = serializer.dumps({"firma_id": firma_id, "accion": accion_aceptar})
-token_rechazar = serializer.dumps({"firma_id": firma_id, "accion": accion_rechazar})
+# Generar tokens
+token_aceptar = serializer.dumps({"firma_id": firma_id, "accion": "aceptar"})
+token_rechazar = serializer.dumps({"firma_id": firma_id, "accion": "rechazar"})
 
+# Imprimir enlaces correctos (con parámetros tipo query)
 print("🔗 Enlace para aceptar:")
-print(f"{DOMINIO}/respuesta_firma/{token_aceptar}")
+print(f"{dominio}/firmar?token={token_aceptar}&accion=aceptar")
 
 print("\n🔗 Enlace para rechazar:")
-print(f"{DOMINIO}/respuesta_firma/{token_rechazar}")
+print(f"{dominio}/firmar?token={token_rechazar}&accion=rechazar")
