@@ -21,6 +21,7 @@ class FirmaRequerida(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), nullable=False)
+    issue_id = db.Column(db.Integer, nullable=True) 
     nombre = db.Column(db.String(255), nullable=False)
     rut = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(255), nullable=False)

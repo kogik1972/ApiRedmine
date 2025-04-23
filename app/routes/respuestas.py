@@ -47,7 +47,7 @@ def procesar_respuesta():
 
         # Actualizar estado
         firma.estado = "aceptado" if accion == "aceptar" else "rechazado"
-        firma.fecha_respuesta = datetime.now()
+        firma.fecha_firma = datetime.now()
         db.session.commit()
 
         # Verificar estado general del documento

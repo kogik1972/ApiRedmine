@@ -22,11 +22,12 @@ def crear_link_firma(token, accion):
         raise ValueError("Acción inválida para link de firma")
     return f"{base_url}/firmar?token={token}&accion={accion}"
 
-def registrar_firmante(documento_id, nombre, rut, email, tipo):
+def registrar_firmante(documento_id, nombre, rut, email, tipo, issue_id):
     from db.db_models import FirmaRequerida
 
     firma = FirmaRequerida(
         documento_id=documento_id,
+        issue_id,
         nombre=nombre,
         rut=rut,
         email=email,
