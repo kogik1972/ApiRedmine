@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request
 from app import db
 from db.db_models import FirmaRequerida
 from itsdangerous import URLSafeSerializer
-from datetime import datetime
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 import os
 import traceback
@@ -47,7 +47,7 @@ def procesar_respuesta():
 
         # Actualizar estado
         firma.estado = "aceptado" if accion == "aceptar" else "rechazado"
-        firma.fecha_respuesta = datetime.now()
+        firma.fecha_firma = datetime.now(timezone.utc)
         db.session.commit()
 
         # Verificar estado general del documento
