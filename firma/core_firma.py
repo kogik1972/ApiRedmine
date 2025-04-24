@@ -61,7 +61,8 @@ def main():
         # 1. Registrar el documento en la base
         documento = Documento(
             nombre=nombre_final,
-            path_pdf=os.path.join("docs", nombre_final)
+            path_pdf=os.path.join("docs", nombre_final),
+            issue_id=args.issue_id
         )
         db.session.add(documento)
         db.session.commit()
