@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 import os
 import traceback
+import pytz
 
 # Cargar variables de entorno
 load_dotenv()
@@ -47,7 +48,8 @@ def procesar_respuesta():
 
         # Actualizar estado
         firma.estado = "aceptado" if accion == "aceptar" else "rechazado"
-        firma.fecha_firma = datetime.now(timezone.utc)
+        tz_cl = pytz.timezone('America/Santiago')
+        firma.fecha_firma = datetime.now(tz_cl)
         db.session.commit()
 
         # Verificar estado general del documento
