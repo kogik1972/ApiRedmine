@@ -4,6 +4,9 @@ import os
 from flask import Flask
 from flask_mail import Mail, Message
 from firma.firma_utils import crear_link_firma
+import smtplib
+from email.message import EmailMessage
+import logging
 
 mail = Mail()  # Extensión global
 
@@ -108,3 +111,45 @@ El equipo de Condominium
 
         mail.send(msg)
         print(f"📨 Correo enviado a: {destinatario}")
+
+
+def enviar_docx_final(documento, ruta_docx):
+    try:
+        # Datos del correo
+        remitente = os.getenv("MAIL_FROM")
+        destinatario = documento.responsable_email
+        asunto = f"Documento firmado: {documento.nombre_archivo}"
+        cuerpo = f"""
+Estimado/a {documento.nombre_responsable},
+
+El documento asociado al issue #{documento.issue_id} ha sido firmado electrónicamente por todos los participantes.
+
+Se adjunta el archivo firmado para su revisión.
+
+Saludos,
+Sistema de Firma Electrónica
+        """
+
+        # Crear mensaje
+        mensaje = EmailMessage()
+        mensaje["Subject"] = asunto
+        mensaje["From"] = remitente
+        mensaje["To"] = destinatario
+        mensaje.set_content(cuerpo)
+
+        # Adjuntar documento
+        with open(ruta_docx, "rb") as f:
+            contenido = f.read()
+            nombre_archivo = os.path.basename(ruta_docx)
+            mensaje.add_attachment(contenido, maintype="application", subtype="vnd.openxmlformats-officedocument.wordprocessingml.document", filename=nombre_archivo)
+
+        # Enviar correo
+        servidor = os.getenv("MAIL_SERVER")
+        puerto = int(os.getenv("MAIL_PORT", 25))
+        with smtplib.SMTP(servidor, puerto) as smtp:
+            smtp.send_message(mensaje)
+
+        logging.info(f"Correo con documento firmado enviado a {destinatario}")
+
+    except Exception as e:
+        logging.error(f"Error al enviar correo con documento firmado: {e}")
