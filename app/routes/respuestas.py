@@ -1,4 +1,3 @@
-## respuestas.py
 from flask import Blueprint, render_template, request
 from app import db
 from db.db_models import FirmaRequerida
@@ -8,6 +7,9 @@ from dotenv import load_dotenv
 import os
 import traceback
 import pytz
+
+# Lógica de firma
+from firma.cerrar_firma import cerrar_aprobado, cerrar_rechazado
 
 # Cargar variables de entorno
 load_dotenv()
@@ -58,11 +60,13 @@ def procesar_respuesta():
 
         if "rechazado" in estados:
             documento.estado_firma = "rechazado"
+            db.session.commit()
+            cerrar_rechazado(documento)
+
         elif all(e == "aceptado" for e in estados):
             documento.estado_firma = "firmado"
-            # 🔜 Estampado PDF o correo con documento puede ir aquí
-
-        db.session.commit()
+            db.session.commit()
+            cerrar_aprobado(documento)
 
         return render_template("gracias.html", estado=firma.estado)
 
