@@ -1,4 +1,5 @@
-# redmine_client.py
+# redmine/redmine_client.py
+
 import sys
 import os
 import requests
@@ -87,4 +88,27 @@ def obtener_emails_desde_redmine(issue_id):
 
     except requests.RequestException as e:
         logging.error(f"redmine_client - ❌ Error al consultar Redmine: {e}")
+        return None
+
+
+# ✅ NUEVA FUNCIÓN: actualizar estado del issue
+def actualizar_estado_issue(issue_id, nuevo_estado_id):
+    logging.info(f"redmine_client - 🔧 Actualizando estado del issue #{issue_id} a status_id={nuevo_estado_id}")
+    try:
+        url = f"{REDMINE_URL}/issues/{issue_id}.json"
+        headers = {
+            "X-Redmine-API-Key": REDMINE_API_KEY,
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "issue": {
+                "status_id": nuevo_estado_id
+            }
+        }
+        response = requests.put(url, json=payload, headers=headers)
+        response.raise_for_status()
+        logging.info("redmine_client - ✅ Estado actualizado correctamente.")
+        return response.json()
+    except requests.RequestException as e:
+        logging.error(f"redmine_client - ❌ Error al actualizar el estado del issue: {e}")
         return None
