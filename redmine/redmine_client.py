@@ -91,7 +91,7 @@ def obtener_emails_desde_redmine(issue_id):
         return None
 
 
-# ✅ NUEVA FUNCIÓN: actualizar estado del issue
+# NUEVA FUNCIÓN: actualizar estado del issue
 def actualizar_estado_issue(issue_id, nuevo_estado_id):
     logging.info(f"redmine_client - 🔧 Actualizando estado del issue #{issue_id} a status_id={nuevo_estado_id}")
     try:
