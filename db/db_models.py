@@ -1,7 +1,6 @@
 ## db/db_models.py
 from flask import Blueprint, render_template, request
 from app import db
-from db.db_models import FirmaRequerida
 from itsdangerous import URLSafeSerializer
 from datetime import datetime, timezone
 from dotenv import load_dotenv
