@@ -1,7 +1,8 @@
-#redmine_client.py
+# redmine_client.py
 import sys
 import os
 import requests
+import logging
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
@@ -19,12 +20,12 @@ if not REDMINE_URL or not REDMINE_API_KEY:
 
 trab_email = 'trab_email'
 
-
 def obtener_emails_desde_redmine(issue_id):
+    logging.info(f"redmine_client - 🔍 Consultando firmantes para issue #{issue_id}")
     try:
         issue_json = get_json(f"issues/{issue_id}.json")
         if not issue_json:
-            print("❌ No se encontró el issue en Redmine.")
+            logging.error("redmine_client - ❌ No se encontró el issue en Redmine.")
             return None
 
         issue_data = issue_json["issue"]
@@ -46,17 +47,17 @@ def obtener_emails_desde_redmine(issue_id):
         id_enum = campos_dict_issue.get(nombre_comunidad)
 
         if not id_enum:
-            print("❌ No se encontró ID de enumeración.")
+            logging.error("redmine_client - ❌ No se encontró ID de enumeración.")
             return None
 
         enum = get_enum(id_enum)
         if not enum:
-            print("❌ Enumeración inválida.")
+            logging.error("redmine_client - ❌ Enumeración inválida.")
             return None
 
         resultado = parsear_enumeracion(enum['name'])
         if not resultado:
-            print("❌ No se pudo parsear la enumeración.")
+            logging.error("redmine_client - ❌ No se pudo parsear la enumeración.")
             return None
 
         campos = get_custom_values(resultado['id'], "Issue")
@@ -67,9 +68,10 @@ def obtener_emails_desde_redmine(issue_id):
                 break
 
         if not email_firmante:
-            print("❌ Email del firmante no encontrado.")
+            logging.error("redmine_client - ❌ Email del firmante no encontrado.")
             return None
 
+        logging.info(f"redmine_client - ✅ Firmantes recuperados correctamente para issue #{issue_id}")
         return {
             "responsable": {
                 "nombre": nombre_responsable,
@@ -84,5 +86,5 @@ def obtener_emails_desde_redmine(issue_id):
         }
 
     except requests.RequestException as e:
-        print(f"❌ Error al consultar Redmine: {e}")
+        logging.error(f"redmine_client - ❌ Error al consultar Redmine: {e}")
         return None

@@ -1,6 +1,6 @@
 # firma/firma_utils.py
-
 import os
+import logging
 from itsdangerous import URLSafeSerializer
 from app import db
 
@@ -18,15 +18,17 @@ if modo == "produccion":
 else:
     base_url = os.getenv("FRONT_DOMAIN_LOCAL", "http://127.0.0.1:5003")
 
-
 def crear_link_firma(token, accion):
     if accion not in ("aceptar", "rechazar"):
         raise ValueError("Acción inválida para link de firma")
-    return f"{base_url}/firmar?token={token}&accion={accion}"
-
+    link = f"{base_url}/firmar?token={token}&accion={accion}"
+    logging.info(f"firma_utils - Link generado ({accion}): {link}")
+    return link
 
 def registrar_firmante(documento_id, nombre, rut, email, tipo):
     from db.db_models import FirmaRequerida
+
+    logging.info(f"firma_utils - Registrando firmante: {nombre} ({email}) tipo: {tipo}")
 
     firma = FirmaRequerida(
         documento_id=documento_id,
@@ -35,10 +37,10 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo):
         email=email,
         tipo=tipo,
         estado='pendiente',
-        token='relleno'  # será reemplazado después
+        token='relleno'
     )
     db.session.add(firma)
-    db.session.commit()  # Necesario para obtener firma.id
+    db.session.commit()  # Para obtener firma.id
 
     token_aceptar = serializer.dumps({"firma_id": firma.id, "accion": "aceptar"})
     token_rechazar = serializer.dumps({"firma_id": firma.id, "accion": "rechazar"})
@@ -46,6 +48,7 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo):
     firma.token = token_aceptar
     db.session.commit()
 
+    logging.info(f"firma_utils - Token generado para firma ID {firma.id}")
     return {
         "firma": firma,
         "link_aceptar": crear_link_firma(token_aceptar, "aceptar"),

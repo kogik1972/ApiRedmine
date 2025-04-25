@@ -1,5 +1,6 @@
-## config.apy
+## utils/config.py
 import os
+import logging
 from dotenv import load_dotenv
 
 # Carga del .env desde la raíz del proyecto
@@ -46,7 +47,8 @@ if not DATABASE_URL: faltantes.append("DATABASE_URL")
 if not SECRET_KEY: faltantes.append("SECRET_KEY")
 
 if faltantes:
+    logging.error(f"config - ❌ Variables faltantes en .env: {', '.join(faltantes)}")
     raise RuntimeError(f"❌ Variables faltantes en .env: {', '.join(faltantes)}")
 
-# === Log opcional ===
-print(f"✅ Configuración cargada. MODO_ENTORNO = {ENTORNO.upper()}")
+# === Log de carga de configuración ===
+logging.info(f"config - ✅ Configuración cargada. MODO_ENTORNO = {ENTORNO.upper()}")

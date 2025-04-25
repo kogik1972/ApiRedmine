@@ -1,27 +1,27 @@
+## redmine/redmine_cache_sql.py
 import os
 import json
+import logging
 import mysql.connector
 from dotenv import load_dotenv
 
 # Cargar variables desde .env
 load_dotenv()
 
-# Directorio y archivo donde se guardará el caché
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 CACHE_FILE_PATH = os.path.join(CACHE_DIR, "enumeraciones_cache.json")
 CUSTOM_VALUES_CACHE_PATH = os.path.join(CACHE_DIR, "custom_values_cache.json")
 
 def ensure_cache_dir_exists():
-    """Crea el directorio 'cache/' si no existe."""
     if not os.path.exists(CACHE_DIR):
         os.makedirs(CACHE_DIR)
-
+        logging.info("redmine_cache_sql - 📁 Directorio 'cache/' creado")
 
 def load_enum_cache():
-    """Carga el caché desde disco, o devuelve un dict vacío si no existe."""
     ensure_cache_dir_exists()
     if os.path.exists(CACHE_FILE_PATH):
+        logging.info("redmine_cache_sql - 📥 Cargando caché de enumeraciones desde disco")
         with open(CACHE_FILE_PATH, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
@@ -29,21 +29,23 @@ def load_enum_cache():
 def load_custom_values_cache():
     ensure_cache_dir_exists()
     if os.path.exists(CUSTOM_VALUES_CACHE_PATH):
+        logging.info("redmine_cache_sql - 📥 Cargando caché de custom_values desde disco")
         with open(CUSTOM_VALUES_CACHE_PATH, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 def save_enum_cache(data):
-    """Guarda el caché actualizado en disco."""
     with open(CACHE_FILE_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+    logging.info("redmine_cache_sql - 💾 Caché de enumeraciones guardado en disco")
 
 def save_custom_values_cache(data):
     with open(CUSTOM_VALUES_CACHE_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+    logging.info("redmine_cache_sql - 💾 Caché de custom_values guardado en disco")
 
 def get_enum_from_db(enum_id):
-    """Consulta la base de datos directamente por una enumeración."""
+    logging.info(f"redmine_cache_sql - 🔄 Consultando DB por enumeración ID {enum_id}")
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
@@ -57,28 +59,22 @@ def get_enum_from_db(enum_id):
     conn.close()
     return row
 
-
 def get_enum(enum_id, force_reload=False):
-    """
-    Retorna una enumeración desde el caché local,
-    o consulta la base de datos si no está (o si force_reload=True).
-    """
     enum_id_str = str(enum_id)
     cache = load_enum_cache()
 
     if not force_reload and enum_id_str in cache:
+        logging.info(f"redmine_cache_sql - ✅ Enumeración {enum_id} obtenida desde caché")
         return cache[enum_id_str]
 
-    print(f"🔄 Consultando DB por enumeración ID {enum_id}...")
     data = get_enum_from_db(enum_id)
-
     if data:
         cache[enum_id_str] = data
         save_enum_cache(cache)
-
     return data
 
 def get_custom_values_from_db(customized_id, customized_type):
+    logging.info(f"redmine_cache_sql - 🔄 Consultando DB por custom_values para {customized_type}:{customized_id}")
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
@@ -99,20 +95,15 @@ def get_custom_values_from_db(customized_id, customized_type):
     return rows
 
 def get_custom_values(customized_id, customized_type, force_reload=False):
-    """
-    Retorna los valores customizados desde caché o desde base de datos si no están en caché.
-    """
     key = f"{customized_type}:{customized_id}"
     cache = load_custom_values_cache()
 
     if not force_reload and key in cache:
+        logging.info(f"redmine_cache_sql - ✅ Custom values para {key} obtenidos desde caché")
         return cache[key]
 
-    print(f"🔄 Consultando DB por custom_values para {key}...")
     data = get_custom_values_from_db(customized_id, customized_type)
-
     if data:
         cache[key] = data
         save_custom_values_cache(cache)
-
     return data
