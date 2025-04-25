@@ -1,0 +1,27 @@
+# Archivos de configuración sensibles
+.env
+
+# __pycache__ y compilados
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales
+venv/
+.env/
+
+# Archivos temporales y logs
+*.log
+*.tmp
+*.bak
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de desarrollo o pruebas
+.idea/
+.vscode/
+*.swp
+
+instance/firma.db
+instance/firma_bak.db
