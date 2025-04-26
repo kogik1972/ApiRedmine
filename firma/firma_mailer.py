@@ -113,43 +113,64 @@ El equipo de Condominium
         print(f"📨 Correo enviado a: {destinatario}")
 
 
-def enviar_docx_final(documento, ruta_docx):
+def enviar_docx_final(nombre, email, documento_path, documento_nombre):
+    """
+    Envía un correo electrónico con un documento .docx firmado adjunto.
+
+    Args:
+        nombre (str): Nombre del destinatario.
+        email (str): Email del destinatario.
+        documento_path (str): Ruta donde se encuentra el documento.
+        documento_nombre (str): Nombre del documento a adjuntar.
+    """
+
     try:
-        # Datos del correo
-        remitente = os.getenv("MAIL_FROM")
-        destinatario = documento.responsable_email
-        asunto = f"Documento firmado: {documento.nombre_archivo}"
-        cuerpo = f"""
-Estimado/a {documento.nombre_responsable},
+        logging.info(f"firma_mailer - Iniciando envío de documento firmado a {email}")
 
-El documento asociado al issue #{documento.issue_id} ha sido firmado electrónicamente por todos los participantes.
+        # Configuración SMTP desde variables de entorno
+        servidor_smtp = os.getenv("MAIL_SERVER")  # Ejemplo: "smtp.gmail.com"
+        puerto_smtp = int(os.getenv("MAIL_PORT", 587))  # Puerto estándar TLS
+        email_origen = os.getenv("MAIL_DEFAULT_SENDER")  # Ejemplo: "firma@example.com"
+        password_origen = os.getenv("MAIL_PASSWORD")
 
-Se adjunta el archivo firmado para su revisión.
+        if not all([servidor_smtp, puerto_smtp, email_origen, password_origen]):
+            logging.error("firma_mailer - Configuración SMTP incompleta en variables de entorno")
+            return False
 
-Saludos,
-Sistema de Firma Electrónica
-        """
+        # Crear mensaje de correo
+        msg = EmailMessage()
+        msg['Subject'] = "Documento firmado electrónicamente"
+        msg['From'] = email_origen
+        msg['To'] = email
+        msg.set_content(f"Estimado/a {nombre},\n\nAdjuntamos el documento firmado electrónicamente.\n\nSaludos cordiales.")
 
-        # Crear mensaje
-        mensaje = EmailMessage()
-        mensaje["Subject"] = asunto
-        mensaje["From"] = remitente
-        mensaje["To"] = destinatario
-        mensaje.set_content(cuerpo)
+        # Cargar y adjuntar el archivo
+        ruta_completa = os.path.join(documento_path, documento_nombre)
 
-        # Adjuntar documento
-        with open(ruta_docx, "rb") as f:
-            contenido = f.read()
-            nombre_archivo = os.path.basename(ruta_docx)
-            mensaje.add_attachment(contenido, maintype="application", subtype="vnd.openxmlformats-officedocument.wordprocessingml.document", filename=nombre_archivo)
+        if not os.path.isfile(ruta_completa):
+            logging.error(f"firma_mailer - Documento no encontrado para adjuntar: {ruta_completa}")
+            return False
 
-        # Enviar correo
-        servidor = os.getenv("MAIL_SERVER")
-        puerto = int(os.getenv("MAIL_PORT", 25))
-        with smtplib.SMTP(servidor, puerto) as smtp:
-            smtp.send_message(mensaje)
+        with open(ruta_completa, 'rb') as f:
+            file_data = f.read()
+            file_name = documento_nombre
 
-        logging.info(f"Correo con documento firmado enviado a {destinatario}")
+        msg.add_attachment(
+            file_data,
+            maintype='application',
+            subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
+            filename=file_name
+        )
+
+        # Enviar el correo
+        with smtplib.SMTP(servidor_smtp, puerto_smtp) as smtp:
+            smtp.starttls()
+            smtp.login(email_origen, password_origen)
+            smtp.send_message(msg)
+
+        logging.info(f"firma_mailer - Documento firmado enviado exitosamente a {email}")
+        return True
 
     except Exception as e:
-        logging.error(f"Error al enviar correo con documento firmado: {e}")
+        logging.error(f"firma_mailer - Error enviando documento firmado a {email}: {e}", exc_info=True)
+        return False

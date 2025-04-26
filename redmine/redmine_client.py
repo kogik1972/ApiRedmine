@@ -1,4 +1,3 @@
-#redmine_client.py
 import sys
 import os
 import requests
@@ -86,3 +85,41 @@ def obtener_emails_desde_redmine(issue_id):
     except requests.RequestException as e:
         print(f"❌ Error al consultar Redmine: {e}")
         return None
+
+
+def actualizar_estado_issue(issue_id, status_id):
+    """
+    Actualiza el estado de un issue en Redmine usando la API REST.
+
+    Args:
+        issue_id (int): ID del issue en Redmine.
+        status_id (int): ID del nuevo estado (ej: 14 = firmado, 15 = rechazado).
+    """
+    try:
+        url = f"{REDMINE_URL}/issues/{issue_id}.json"
+        
+        print(f"URL: {url} - {issue_id} - {status_id}")
+        print(f"REDMINE_API_KEY: {REDMINE_API_KEY}")
+
+        headers = {
+            "X-Redmine-API-Key": REDMINE_API_KEY,
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "issue": {
+                "status_id": status_id
+            }
+        }
+
+        response = requests.put(url, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            print(f"✅ Issue {issue_id} actualizado correctamente a status_id={status_id}")
+            return True
+        else:
+            print(f"❌ Error al actualizar issue {issue_id}: {response.status_code} - {response.text}")
+            return False
+
+    except Exception as e:
+        print(f"❌ Excepción al actualizar issue {issue_id}: {e}")
+        return False
