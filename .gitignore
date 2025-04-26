@@ -3,7 +3,9 @@
 
 # __pycache__ y compilados
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
 
 # Entornos virtuales
 venv/

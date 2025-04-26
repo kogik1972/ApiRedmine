@@ -14,7 +14,7 @@ from firma.estampar_firmas import estampar_firmas
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def main():
-    issue_id = 1234
+    issue_id = 4775
     nombre_documento = "4.477.432-1_20250424_205215_AnexoCambioSueldo.docx"
 
     # Detectar sistema operativo
