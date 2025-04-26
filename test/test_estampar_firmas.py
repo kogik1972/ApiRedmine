@@ -13,6 +13,15 @@ from firma.estampar_firmas import estampar_firmas
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# 🔵 Crear una clase MockFirma para simular los objetos reales
+class MockFirma:
+    def __init__(self, nombre, rut, fecha_firma, tipo, email=None):
+        self.nombre = nombre
+        self.rut = rut
+        self.fecha_firma = fecha_firma
+        self.tipo = tipo
+        self.email = email
+
 def main():
     issue_id = 4775
     nombre_documento = "4.477.432-1_20250424_205215_AnexoCambioSueldo.docx"
@@ -30,9 +39,10 @@ def main():
 
     path_documento = base_dir
 
+    # 🔵 Crear firmas como objetos MockFirma, no como diccionarios
     firmas_requeridas = [
-        {"nombre": "Juan Pablo Alvarez", "rut": "12.262.608-3", "fecha_firma": "25-04-2025 01:25", "tipo": "firmante"},
-        {"nombre": "Angie Godoy Nelson", "rut": "12.249.408-K", "fecha_firma": "25-04-2025 09:30", "tipo": "responsable"}
+        MockFirma(nombre="Juan Pablo Alvarez", rut="12.262.608-3", fecha_firma="25-04-2025 01:25", tipo="firmante"),
+        MockFirma(nombre="Angie Godoy Nelson", rut="12.249.408-K", fecha_firma="25-04-2025 09:30", tipo="responsable")
     ]
 
     resultado = estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas)

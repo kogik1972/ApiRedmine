@@ -27,8 +27,10 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
         doc = Document(ruta_completa)
 
         # Organizar firmas por tipo
-        firmante = next((f for f in firmas_requeridas if f['tipo'] == 'firmante'), None)
-        responsable = next((f for f in firmas_requeridas if f['tipo'] == 'responsable'), None)
+        firmante = next((f for f in firmas_requeridas if f.tipo == 'firmante'), None)
+        responsable = next((f for f in firmas_requeridas if f.tipo == 'responsable'), None)
+        #firmante = next((f for f in firmas_requeridas if f['tipo'] == 'firmante'), None)
+        #responsable = next((f for f in firmas_requeridas if f['tipo'] == 'responsable'), None)
 
         for section in doc.sections:
             footer = section.footer
@@ -66,7 +68,8 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
             if firmante:
                 p = row_cells[0].paragraphs[0]
                 p.alignment = 0  # LEFT
-                run = p.add_run(f"Trabajador: {firmante['nombre']} {firmante['rut']} {firmante['fecha_firma']}")
+                run = p.add_run(f"Trabajador: {firmante.nombre} {firmante.rut} {firmante.fecha_firma}")
+                #run = p.add_run(f"Trabajador: {firmante['nombre']} {firmante['rut']} {firmante['fecha_firma']}")
                 run.font.size = Pt(8)
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)  # Negro puro
@@ -75,7 +78,8 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
             if responsable:
                 p = row_cells[1].paragraphs[0]
                 p.alignment = 2  # RIGHT
-                run = p.add_run(f"Empresa: {responsable['nombre']} {responsable['rut']} {responsable['fecha_firma']}")
+                run = p.add_run(f"Empresa: {responsable.nombre} {responsable.rut} {responsable.fecha_firma}")
+                #run = p.add_run(f"Empresa: {responsable['nombre']} {responsable['rut']} {responsable['fecha_firma']}")
                 run.font.size = Pt(8)
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)  # Negro puro

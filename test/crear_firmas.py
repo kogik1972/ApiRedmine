@@ -16,8 +16,8 @@ app = create_app()
 with app.app_context():
     # Crear documento de prueba
     doc = Documento(
-        nombre="Documento de prueba listener",
-        path_pdf="docs/contrato_prueba.pdf",
+        nombre="4.477.432-1_20250424_205215_AnexoCambioSueldo.docx",
+        path_pdf = "docs/",
         fecha_generacion=datetime.now()
     )
     db.session.add(doc)
