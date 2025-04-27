@@ -9,7 +9,8 @@ if ROOT_DIR not in sys.path:
 
 # Librerías para CLI y entorno
 import argparse
-from dotenv import load_dotenv
+
+#from dotenv import load_dotenv
 
 # Funciones internas del sistema
 from scripts.archivo_manager import mover_a_docs
@@ -54,6 +55,8 @@ def main():
 
     # Mueve el archivo a la carpeta /docs/, evitando colisiones
     ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
+    logging.info(f'core_firma - ruta_final: {ruta_final}')
+    logging.info(f'core_firma - nombre_final: {nombre_final}')
 
     # Obtiene los firmantes desde Redmine a través del issue_id
     datos_firmantes = obtener_emails_desde_redmine(args.issue_id)
