@@ -102,6 +102,9 @@ El equipo de Condominium
         doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
         nombre_archivo = os.path.basename(doc_path)
 
+        logging.info(f"firma_mailer.py - doc_path: {doc_path}")
+        logging.info(f"firma_mailer.py - nombre_archivo: {nombre_archivo}")
+
         if os.path.exists(doc_path):
             with open(doc_path, "rb") as file:
                 msg.attach(
