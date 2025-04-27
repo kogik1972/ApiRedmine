@@ -21,9 +21,9 @@ def main():
     resultado = cerrar_issue_firma(issue_id, estado)
 
     if resultado:
-        logging.info("Test de redmine_cierre exitoso ✅")
+        logging.info("test_redmine_cierre.py - Test de redmine_cierre exitoso ✅")
     else:
-        logging.error("Test de redmine_cierre fallido ❌")
+        logging.error("test_redmine_cierre.py - Test de redmine_cierre fallido ❌")
 
 if __name__ == "__main__":
     main()

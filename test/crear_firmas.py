@@ -7,6 +7,10 @@ from dotenv import load_dotenv
 from datetime import datetime
 import uuid
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 from app import create_app, db
 from db.db_models import Documento, FirmaRequerida
 
@@ -37,6 +41,6 @@ with app.app_context():
     db.session.add(firma)
     db.session.commit()
 
-    print("🎉 Firma dummy creada con éxito")
-    print(f"🆔 ID: {firma.id}")
-    print(f"🔐 Token: {firma.token}")
+    logging.info(f"crear_firmas.py - Firma dummy creada con éxito")
+    logging.info(f"crear_firmas.py - ID: {firma.id}")
+    logging.info(f"crear_firmas.py - token: {firma.token}")

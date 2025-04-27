@@ -2,6 +2,10 @@ import sys
 import os
 import requests
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
@@ -23,7 +27,7 @@ def obtener_emails_desde_redmine(issue_id):
     try:
         issue_json = get_json(f"issues/{issue_id}.json")
         if not issue_json:
-            print("❌ No se encontró el issue en Redmine.")
+            logging.info(f"redmine_client.py - No se encontró el issue en Redmine.")
             return None
 
         issue_data = issue_json["issue"]
@@ -45,17 +49,17 @@ def obtener_emails_desde_redmine(issue_id):
         id_enum = campos_dict_issue.get(nombre_comunidad)
 
         if not id_enum:
-            print("❌ No se encontró ID de enumeración.")
+            logging.info(f"redmine_client.py - No se encontró ID de enumeración.")
             return None
 
         enum = get_enum(id_enum)
         if not enum:
-            print("❌ Enumeración inválida.")
+            logging.info(f"redmine_client.py - Enumeración inválida.")
             return None
 
         resultado = parsear_enumeracion(enum['name'])
         if not resultado:
-            print("❌ No se pudo parsear la enumeración.")
+            logging.info(f"redmine_client.py - No se pudo parsear la enumeración.")
             return None
 
         campos = get_custom_values(resultado['id'], "Issue")
@@ -66,7 +70,7 @@ def obtener_emails_desde_redmine(issue_id):
                 break
 
         if not email_firmante:
-            print("❌ Email del firmante no encontrado.")
+            logging.info(f"redmine_client.py - Email del firmante no encontrado.")
             return None
 
         return {
@@ -83,7 +87,7 @@ def obtener_emails_desde_redmine(issue_id):
         }
 
     except requests.RequestException as e:
-        print(f"❌ Error al consultar Redmine: {e}")
+        logging.info(f"redmine_client.py - Error al consultar Redmine: {e}")
         return None
 
 
@@ -98,8 +102,8 @@ def actualizar_estado_issue(issue_id, status_id):
     try:
         url = f"{REDMINE_URL}/issues/{issue_id}.json"
         
-        print(f"URL: {url} - {issue_id} - {status_id}")
-        print(f"REDMINE_API_KEY: {REDMINE_API_KEY}")
+        logging.info(f"redmine_client.py - URL: {url} - {issue_id} - {status_id}")
+        logging.info(f"redmine_client.py - REDMINE_API_KEY: {REDMINE_API_KEY}")
 
         headers = {
             "X-Redmine-API-Key": REDMINE_API_KEY,
@@ -114,12 +118,12 @@ def actualizar_estado_issue(issue_id, status_id):
         response = requests.put(url, json=payload, headers=headers)
 
         if response.status_code == 200:
-            print(f"✅ Issue {issue_id} actualizado correctamente a status_id={status_id}")
+            logging.info(f"redmine_client.py - Issue {issue_id} actualizado correctamente a status_id={status_id}")
             return True
         else:
-            print(f"❌ Error al actualizar issue {issue_id}: {response.status_code} - {response.text}")
+            logging.info(f"redmine_client.py - Error al actualizar issue {issue_id}: {response.status_code} - {response.text}")
             return False
 
     except Exception as e:
-        print(f"❌ Excepción al actualizar issue {issue_id}: {e}")
+        logging.info(f"redmine_client.py - Excepción al actualizar issue {issue_id}: {e}")
         return False

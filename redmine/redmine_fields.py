@@ -2,6 +2,11 @@ import os
 import requests
 from dotenv import load_dotenv
 load_dotenv()
+
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 modo = os.getenv("MODO_ENTORNO", "desarrollo")
 if modo == "produccion":
     REDMINE_URL = os.getenv("REDMINE_URL_PROD")

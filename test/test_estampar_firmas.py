@@ -34,7 +34,7 @@ def main():
     elif sistema == "Linux":
         base_dir = os.path.join("/home", "desa", "Data", "redmine-5.1.3", "files", "2025", "04")
     else:
-        logging.error(f"Sistema operativo no soportado: {sistema}")
+        logging.error(f"test_estampar_firmas.py - Sistema operativo no soportado: {sistema}")
         return
 
     path_documento = base_dir
@@ -48,9 +48,9 @@ def main():
     resultado = estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas)
 
     if resultado:
-        logging.info("Test de estampado exitoso ✅")
+        logging.info("test_estampar_firmas.py - Test de estampado exitoso ✅")
     else:
-        logging.error("Test de estampado fallido ❌")
+        logging.error("test_estampar_firmas.py - Test de estampado fallido ❌")
 
 if __name__ == "__main__":
     main()

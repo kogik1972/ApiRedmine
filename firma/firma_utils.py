@@ -4,6 +4,10 @@ import os
 from itsdangerous import URLSafeSerializer
 from app import db
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 # Carga configuración del entorno ya inicializada por Flask
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:

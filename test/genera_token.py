@@ -4,6 +4,10 @@ import os
 from dotenv import load_dotenv
 from itsdangerous import URLSafeSerializer
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 load_dotenv()
 
 # Detectar entorno actual
@@ -20,7 +24,7 @@ serializer = URLSafeSerializer(SECRET_KEY)
 try:
     firma_id = int(input("🔢 Ingresa el firma_id existente en la BD: ").strip())
 except ValueError:
-    print("⚠️ Debes ingresar un número entero válido.")
+    logging.info(f"genera_token.py - Debes ingresar un número entero válido.")
     exit(1)
 
 # Generar tokens
@@ -28,8 +32,8 @@ token_aceptar = serializer.dumps({"firma_id": firma_id, "accion": "aceptar"})
 token_rechazar = serializer.dumps({"firma_id": firma_id, "accion": "rechazar"})
 
 # Imprimir enlaces correctos (con parámetros tipo query)
-print("🔗 Enlace para aceptar:")
-print(f"{dominio}/firmar?token={token_aceptar}&accion=aceptar")
+logging.info(f"genera_token.py - Enlace para aceptar:")
+logging.info(f"genera_token.py - {dominio}/firmar?token={token_aceptar}&accion=aceptar")
 
-print("\n🔗 Enlace para rechazar:")
-print(f"{dominio}/firmar?token={token_rechazar}&accion=rechazar")
+logging.info(f"genera_token.py - Enlace para rechazar:")
+logging.info(f"genera_token.py - {dominio}/firmar?token={token_rechazar}&accion=rechazar")

@@ -6,7 +6,11 @@ from flask_mail import Mail, Message
 from firma.firma_utils import crear_link_firma
 import smtplib
 from email.message import EmailMessage
+
+from utils.logging_config import configurar_logging
 import logging
+configurar_logging()
+
 
 mail = Mail()  # Extensión global
 
@@ -105,12 +109,12 @@ El equipo de Condominium
                     content_type="application/pdf",
                     data=file.read()
                 )
-                print(f"📎 Documento adjunto: {nombre_archivo}")
+                logging.info(f"firma_mailer.py - Documento adjunto: {nombre_archivo}")
         else:
-            print(f"⚠ Advertencia: No se encontró el documento a adjuntar: {doc_path}")
+            logging.info(f"firma_mailer.py - Advertencia: No se encontró el documento a adjuntar: {doc_path}")
 
         mail.send(msg)
-        print(f"📨 Correo enviado a: {destinatario}")
+        logging.info(f"firma_mailer.py - Correo enviado a: {destinatario}")
 
 
 def enviar_docx_final(nombre, email, documento_path, documento_nombre):
@@ -148,7 +152,7 @@ def enviar_docx_final(nombre, email, documento_path, documento_nombre):
         ruta_completa = os.path.join(documento_path, documento_nombre)
 
         if not os.path.isfile(ruta_completa):
-            logging.error(f"firma_mailer - Documento no encontrado para adjuntar: {ruta_completa}")
+            logging.error(f"firma_mailer.py - Documento no encontrado para adjuntar: {ruta_completa}")
             return False
 
         with open(ruta_completa, 'rb') as f:
@@ -168,9 +172,9 @@ def enviar_docx_final(nombre, email, documento_path, documento_nombre):
             smtp.login(email_origen, password_origen)
             smtp.send_message(msg)
 
-        logging.info(f"firma_mailer - Documento firmado enviado exitosamente a {email}")
+        logging.info(f"firma_mailer.py - Documento firmado enviado exitosamente a {email}")
         return True
 
     except Exception as e:
-        logging.error(f"firma_mailer - Error enviando documento firmado a {email}: {e}", exc_info=True)
+        logging.error(f"firma_mailer.py - Error enviando documento firmado a {email}: {e}", exc_info=True)
         return False
