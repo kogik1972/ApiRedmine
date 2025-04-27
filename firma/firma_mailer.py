@@ -101,7 +101,7 @@ El equipo de Condominium
         # Adjuntar el archivo al correo
         #doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
         
-        doc_path_nombre = os.path.abspath(os.path.join(documento.path_pdf , '..', documento.nombre))
+        doc_path_nombre = os.path.abspath(os.path.join(documento.path_pdf , documento.nombre))
         
         logging.info(f"firma_mailer.py - doc_path_nombre: {doc_path_nombre}")
         logging.info(f"firma_mailer.py - documento.path_pdf: {documento.path_pdf}")
