@@ -99,20 +99,22 @@ El equipo de Condominium
         )
 
         # Adjuntar el archivo al correo
-        doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
-        nombre_archivo = os.path.basename(doc_path)
+        #doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
+        
+        doc_path_nombre = os.path.abspath(os.path.join(documento.nombre, '..', documento.path_pdf))
+        
+        logging.info(f"firma_mailer.py - doc_path_nombre: {doc_path_nombre}")
+        logging.info(f"firma_mailer.py - documento.path: {documento.path_pdf}")
+        logging.info(f"firma_mailer.py - documento.nombre: {documento.nombre}")
 
-        logging.info(f"firma_mailer.py - doc_path: {doc_path}")
-        logging.info(f"firma_mailer.py - nombre_archivo: {documento.nombre}")
-
-        if os.path.exists(doc_path):
-            with open(doc_path, "rb") as file:
+        if os.path.exists(documento.path_pdf):
+            with open(doc_path_nombre, "rb") as file:
                 msg.attach(
-                    filename=nombre_archivo,
+                    filename=documento.nombre,
                     content_type="application/pdf",
                     data=file.read()
                 )
-                logging.info(f"firma_mailer.py - Documento adjunto: {nombre_archivo}")
+                logging.info(f"firma_mailer.py - Documento adjunto: {documento.nombre}")
         else:
             logging.info(f"firma_mailer.py - Advertencia: No se encontró el documento a adjuntar: {doc_path}")
 
