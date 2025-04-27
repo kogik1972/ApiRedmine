@@ -26,7 +26,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Core de orquestación del proceso de firma electrónica.")
     parser.add_argument('--issue_id', type=int, required=True, help='ID del issue en Redmine')
     parser.add_argument('--directorio', type=str, required=True, help='Directorio donde se generó el archivo')
-    parser.add_argument('--nombre_documento', type=str, required=True, help='Nombre del archivo PDF generado')
+    parser.add_argument('--nombre_documento', type=str, required=True, help='Nombre del archivo generado')
     return parser.parse_args()
 
 
@@ -47,6 +47,10 @@ def main():
     if not os.path.isfile(ruta_original):
         print(f"❌ Archivo no encontrado: {ruta_original}")
         return
+
+    print(f'issue_id:{args.issue_id}')
+    print(f'directorio:{args.directorio}')
+    print(f'nombre_documento:{args.nombre_documento}')
 
     # Mueve el archivo a la carpeta /docs/, evitando colisiones
     ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
