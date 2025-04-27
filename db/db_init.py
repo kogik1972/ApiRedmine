@@ -14,4 +14,4 @@ with app.app_context():
     db.drop_all()
     logging.info(f"db_init.py - Creando base desde cero...")
     db.create_all()
-    logging.info(f"db_init.py - Base de datos lista en:", app.config['SQLALCHEMY_DATABASE_URI'])
+    logging.info(f"db_init.py - Base de datos lista en: {app.config['SQLALCHEMY_DATABASE_URI']}")
