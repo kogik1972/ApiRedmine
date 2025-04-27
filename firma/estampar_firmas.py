@@ -10,17 +10,11 @@ import logging
 configurar_logging()
 
 def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas):
-    """
-    Estampa las firmas de los intervinientes en el pie de cada página del documento Word (.docx).
-
-    Args:
-        issue_id (int): ID del issue en Redmine.
-        nombre_documento (str): Nombre del archivo .docx.
-        path_documento (str): Ruta donde se encuentra el documento.
-        firmas_requeridas (list): Lista de diccionarios con los datos de los firmantes:
-                                  [{'nombre': str, 'rut': str, 'fecha_firma': str, 'tipo': str}, ...]
-    """
     try:
+        logging.info(f"estampar_firmas.py - issue_id: {issue_id}")
+        logging.info(f"estampar_firmas.py - nombre_documento: {nombre_documento}")
+        logging.info(f"estampar_firmas.py - path_documento: {path_documento}")
+
         ruta_completa = os.path.join(path_documento, nombre_documento)
         logging.info(f"estampar_firmas.py - Abriendo documento para estampado: {ruta_completa}")
 
@@ -33,8 +27,6 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
         # Organizar firmas por tipo
         firmante = next((f for f in firmas_requeridas if f.tipo == 'firmante'), None)
         responsable = next((f for f in firmas_requeridas if f.tipo == 'responsable'), None)
-        #firmante = next((f for f in firmas_requeridas if f['tipo'] == 'firmante'), None)
-        #responsable = next((f for f in firmas_requeridas if f['tipo'] == 'responsable'), None)
 
         for section in doc.sections:
             footer = section.footer
@@ -73,7 +65,6 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
                 p = row_cells[0].paragraphs[0]
                 p.alignment = 0  # LEFT
                 run = p.add_run(f"Trabajador: {firmante.nombre} {firmante.rut} {firmante.fecha_firma}")
-                #run = p.add_run(f"Trabajador: {firmante['nombre']} {firmante['rut']} {firmante['fecha_firma']}")
                 run.font.size = Pt(8)
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)  # Negro puro
@@ -83,7 +74,6 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
                 p = row_cells[1].paragraphs[0]
                 p.alignment = 2  # RIGHT
                 run = p.add_run(f"Empresa: {responsable.nombre} {responsable.rut} {responsable.fecha_firma}")
-                #run = p.add_run(f"Empresa: {responsable['nombre']} {responsable['rut']} {responsable['fecha_firma']}")
                 run.font.size = Pt(8)
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)  # Negro puro

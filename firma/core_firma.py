@@ -69,7 +69,7 @@ def main():
     with app.app_context():
         # 1. Registrar el documento en la base
         documento = Documento(
-            nombre=nombre_final,
+            nombre=args.nombre_documento,
             path_pdf=os.path.join(args.directorio, ''),
             issue_id=args.issue_id
         )
