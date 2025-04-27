@@ -98,12 +98,12 @@ El equipo de Condominium
             body=cuerpo_texto
         )
 
-        # Adjuntar el archivo PDF al correo
+        # Adjuntar el archivo al correo
         doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
         nombre_archivo = os.path.basename(doc_path)
 
         logging.info(f"firma_mailer.py - doc_path: {doc_path}")
-        logging.info(f"firma_mailer.py - nombre_archivo: {nombre_archivo}")
+        logging.info(f"firma_mailer.py - nombre_archivo: {documento.nombre}")
 
         if os.path.exists(doc_path):
             with open(doc_path, "rb") as file:
