@@ -3,6 +3,10 @@ from app import db
 import pytz
 tz_cl = pytz.timezone('America/Santiago')
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 class Documento(db.Model):
     __tablename__ = 'documentos'
 

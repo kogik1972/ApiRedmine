@@ -8,13 +8,13 @@ from dotenv import load_dotenv
 import os
 import traceback
 import pytz
+
 import logging
+from utils.logging_config import configurar_logging
+configurar_logging()
 
 # Cargar variables de entorno
 load_dotenv()
-
-# Configurar logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 # Blueprint
 respuestas_bp = Blueprint('respuestas', __name__)
@@ -36,7 +36,7 @@ def procesar_respuesta():
         accion = request.args.get("accion")
 
         if not token or not accion:
-            logging.warning("Faltan parámetros requeridos en la solicitud")
+            logging.warning("respuestas.py - Faltan parámetros requeridos en la solicitud")
             return "Faltan parámetros requeridos", 400
 
         # Decodificar el token
@@ -45,18 +45,18 @@ def procesar_respuesta():
 
         # Validación cruzada entre token y parámetro
         if data.get("accion") != accion:
-            logging.warning("La acción no coincide con el token")
+            logging.warning("respuestas.py - La acción no coincide con el token")
             return "La acción no coincide con el token", 400
 
         # Buscar firmante
         firma = FirmaRequerida.query.get(firma_id)
         if not firma:
-            logging.error(f"Firma no encontrada para firma_id: {firma_id}")
+            logging.error(f"respuestas.py - Firma no encontrada para firma_id: {firma_id}")
             return "Firma no encontrada", 404
 
         # Ya respondió
         if firma.estado in ['aceptado', 'rechazado']:
-            logging.info(f"Firma ya respondida previamente con estado: {firma.estado}")
+            logging.info(f"respuestas.py - Firma ya respondida previamente con estado: {firma.estado}")
             return render_template("ya_respondido.html", estado=firma.estado)
 
         # Actualizar estado
@@ -86,40 +86,40 @@ def procesar_respuesta():
 
         if "rechazado" in estados:
             documento.estado_firma = "rechazado"
-            logging.info(f"Documento marcado como rechazado. Cerrando issue {issue_id} en Redmine.")
+            logging.info(f"respuestas.py - Documento marcado como rechazado. Cerrando issue {issue_id} en Redmine.")
             #3) Cerrar issue en Redmine
             resultado_cierre = cerrar_issue_firma(issue_id, "rechazado")
             if not resultado_cierre:
-                logging.error(f"Error al rechazar issue {issue_id} en Redmine")
+                logging.error(f"respuestas.py - Error al rechazar issue {issue_id} en Redmine")
                 raise Exception("Error al rechazar issue en Redmine")
 
         elif all(e == "aceptado" for e in estados):
             documento.estado_firma = "firmado"
-            logging.info(f"Todas las firmas aceptadas. Estampando documento: {nombre_documento}.")
+            logging.info(f"respuestas.py - Todas las firmas aceptadas. Estampando documento: {nombre_documento}.")
 
             # 1) Estampar firmas
             resultado_estampado = estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas)
             if not resultado_estampado:
-                logging.error(f"Error al estampar firmas en documento {nombre_documento}")
+                logging.error(f"respuestas.py - Error al estampar firmas en documento {nombre_documento}")
                 raise Exception("Error al estampar firmas")
 
             # 2) Enviar documento firmado
             resultado_envio = enviar_documento_firmado(issue_id, path_documento, nombre_documento, destinatarios)
             if not resultado_envio:
-                logging.error(f"Error al enviar documento firmado {nombre_documento}")
+                logging.error(f"respuestas.py - Error al enviar documento firmado {nombre_documento}")
                 raise Exception("Error al enviar documento firmado")
 
             # 3) Cerrar issue en Redmine
             resultado_cierre = cerrar_issue_firma(issue_id, "firmado")
             if not resultado_cierre:
-                logging.error(f"Error al cerrar issue {issue_id} en Redmine tras firma")
+                logging.error(f"respuestas.py - Error al cerrar issue {issue_id} en Redmine tras firma")
                 raise Exception("Error al cerrar issue en Redmine")
 
         db.session.commit()
 
-        logging.info(f"Proceso completado correctamente para issue_id: {issue_id}")
+        logging.info(f"respuestas.py - Proceso completado correctamente para issue_id: {issue_id}")
         return render_template("gracias.html", estado=firma.estado)
 
     except Exception as e:
-        logging.error(f"Error general en procesar_respuesta: {e}")
+        logging.error(f"respuestas.py - Error general en procesar_respuesta: {e}")
         return f"<pre>{traceback.format_exc()}</pre>", 500

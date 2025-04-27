@@ -3,6 +3,10 @@ import os
 import shutil
 from datetime import datetime
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 # Asegura que siempre se use la carpeta raíz del proyecto
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -16,5 +20,5 @@ def mover_a_docs(origen, nombre_archivo):
     destino = os.path.join(destino_dir, nuevo_nombre)
 
     shutil.copy2(origen, destino)
-    print(f"✅ Archivo copiado a: {destino}")
+    logging.info(f"archivo_manager.py - Archivo copiado a: {destino}")
     return destino, nuevo_nombre

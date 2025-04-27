@@ -44,9 +44,9 @@ def main():
     )
     
     if resultado:
-        logging.info("Test de firma_cierre exitoso ✅")
+        logging.info("test_firma_cierre.py - Test de firma_cierre exitoso ✅")
     else:
-        logging.error("Test de firma_cierre fallido ❌")
+        logging.error("test_firma_cierre.py - Test de firma_cierre fallido ❌")
 
 if __name__ == "__main__":
     main()

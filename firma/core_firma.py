@@ -1,7 +1,11 @@
 ## core_firma.py
 import sys
 import os
+
+from utils.logging_config import configurar_logging
 import logging
+configurar_logging()
+
 
 # Define la raíz absoluta del proyecto para asegurar importaciones correctas
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -20,9 +24,6 @@ from app import create_app, db
 from db.db_models import Documento
 from firma.firma_utils import registrar_firmante
 from firma.firma_mailer import enviar_correo_firma
-
-# Configurar logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 def parse_args():
     """Parsea los argumentos requeridos para ejecutar el script."""
@@ -47,22 +48,22 @@ def main():
     ruta_original = os.path.join(ROOT_DIR, args.directorio, args.nombre_documento)
 
     if not os.path.isfile(ruta_original):
-        logging.error(f"Archivo no encontrado: {ruta_original}")
+        logging.error(f"core_firma.py - Archivo no encontrado: {ruta_original}")
         return
 
-    logging.info(f'core_firma - args.issue_id: {args.issue_id}')
-    logging.info(f'core_firma - args.directorio: {args.directorio}')
-    logging.info(f'core_firma - args.nombre_documento: {args.nombre_documento}')
+    logging.info(f'core_firma.py - args.issue_id: {args.issue_id}')
+    logging.info(f'core_firma.py - args.directorio: {args.directorio}')
+    logging.info(f'core_firma.py - args.nombre_documento: {args.nombre_documento}')
 
     # Mueve el archivo a la carpeta /docs/, evitando colisiones
     ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
-    logging.info(f'core_firma - ruta_final: {ruta_final}')
-    logging.info(f'core_firma - nombre_final: {nombre_final}')
+    logging.info(f'core_firma.py - ruta_final: {ruta_final}')
+    logging.info(f'core_firma.py - nombre_final: {nombre_final}')
 
     # Obtiene los firmantes desde Redmine a través del issue_id
     datos_firmantes = obtener_emails_desde_redmine(args.issue_id)
     if not datos_firmantes:
-        logging.error("No se pudieron obtener los datos de los firmantes. Proceso abortado.")
+        logging.error("core_firma.py - No se pudieron obtener los datos de los firmantes. Proceso abortado.")
         return
 
     with app.app_context():
@@ -84,12 +85,13 @@ def main():
                 email=persona["email"],
                 tipo=tipo
             )
+            logging.info(f"core_firma.py - token: {token}")
 
             firmante = documento.firmas[-1]
             enviar_correo_firma(firmante, documento)
 
-        logging.info(f"Documento registrado en BD con ID {documento.id}")
-        logging.info(f"Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
+        logging.info(f"core_firma.py - Documento registrado en BD con ID {documento.id}")
+        logging.info(f"core_firma.py - Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
 
 if __name__ == '__main__':
     main()

@@ -3,6 +3,10 @@ import json
 import mysql.connector
 from dotenv import load_dotenv
 
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
+
 # Cargar variables desde .env
 load_dotenv()
 
@@ -69,7 +73,7 @@ def get_enum(enum_id, force_reload=False):
     if not force_reload and enum_id_str in cache:
         return cache[enum_id_str]
 
-    print(f"🔄 Consultando DB por enumeración ID {enum_id}...")
+    logging.info(f"redmine_cache_sql.py - Consultando DB por enumeración ID {enum_id}...")
     data = get_enum_from_db(enum_id)
 
     if data:
@@ -108,7 +112,7 @@ def get_custom_values(customized_id, customized_type, force_reload=False):
     if not force_reload and key in cache:
         return cache[key]
 
-    print(f"🔄 Consultando DB por custom_values para {key}...")
+    logging.info(f"redmine_cache_sql.py - Consultando DB por custom_values para {key}...")
     data = get_custom_values_from_db(customized_id, customized_type)
 
     if data:
