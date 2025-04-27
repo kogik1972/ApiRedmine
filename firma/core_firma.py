@@ -48,9 +48,9 @@ def main():
         print(f"❌ Archivo no encontrado: {ruta_original}")
         return
 
-    print(f'issue_id:{args.issue_id}')
-    print(f'directorio:{args.directorio}')
-    print(f'nombre_documento:{args.nombre_documento}')
+    print(f'core_firma - issue_id:{args.issue_id}')
+    print(f'core_firma - directorio:{args.directorio}')
+    print(f'core_firma - nombre_documento:{args.nombre_documento}')
 
     # Mueve el archivo a la carpeta /docs/, evitando colisiones
     ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
@@ -65,7 +65,7 @@ def main():
         # 1. Registrar el documento en la base
         documento = Documento(
             nombre=nombre_final,
-            path_pdf=os.path.join("docs", nombre_final),
+            path_pdf=os.path.join(args.directorio, nombre_final),
             issue_id=args.issue_id
         )
         db.session.add(documento)
