@@ -34,7 +34,8 @@ def parse_args():
     return parser.parse_args()
 
 def main():
-    """Punto de entrada principal del proceso de firma electrónica."""
+    logging.info(f'Punto de entrada principal del proceso de firma electrónica.')
+
     args = parse_args()
 
     # Crea instancia Flask y configura conexión a base de datos
