@@ -95,7 +95,7 @@ def procesar_respuesta():
 
         elif all(e == "aceptado" for e in estados):
             documento.estado_firma = "firmado"
-            logging.info(f"Todas las firmas aceptadas. Estampando documento {nombre_documento}.")
+            logging.info(f"Todas las firmas aceptadas. Estampando documento: {nombre_documento}.")
 
             # 1) Estampar firmas
             resultado_estampado = estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas)
