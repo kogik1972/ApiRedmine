@@ -102,7 +102,7 @@ El equipo de Condominium
         #doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
         
         doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
-        doc_path_nombre = os.path.abspath(os.path.join(doc_path_nombre, documento.nombre))
+        doc_path_nombre = os.path.abspath(os.path.join(doc_path, documento.nombre))
 
         logging.info(f"firma_mailer.py - doc_path: {doc_path}")
         logging.info(f"firma_mailer.py - doc_path_nombre: {doc_path_nombre}")
