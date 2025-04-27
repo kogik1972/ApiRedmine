@@ -2,15 +2,14 @@
 import sys
 import os
 
-from utils.logging_config import configurar_logging
-import logging
-configurar_logging()
-
-
 # Define la raíz absoluta del proyecto para asegurar importaciones correctas
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
+
+from utils.logging_config import configurar_logging
+import logging
+configurar_logging()
 
 # Librerías para CLI y entorno
 import argparse
