@@ -101,13 +101,15 @@ El equipo de Condominium
         # Adjuntar el archivo al correo
         #doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
         
-        doc_path_nombre = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
-        
+        doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
+        doc_path_nombre = os.path.abspath(os.path.join(doc_path_nombre, documento.nombre))
+
+        logging.info(f"firma_mailer.py - doc_path: {doc_path}")
         logging.info(f"firma_mailer.py - doc_path_nombre: {doc_path_nombre}")
         logging.info(f"firma_mailer.py - documento.path_pdf: {documento.path_pdf}")
         logging.info(f"firma_mailer.py - documento.nombre: {documento.nombre}")
 
-        if os.path.exists(documento.path_pdf):
+        if os.path.exists(doc_path_nombre):
             with open(doc_path_nombre, "rb") as file:
                 msg.attach(
                     filename=documento.nombre,
