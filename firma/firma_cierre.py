@@ -6,18 +6,16 @@ import logging
 configurar_logging()
 
 def enviar_documento_firmado(issue_id, documento_path, documento_nombre, destinatarios):
+
     """
     Orquesta el envío de un documento firmado electrónicamente a una lista de destinatarios.
     Usa internamente firma_mailer.
-
-    Args:
-        issue_id (int): ID del issue asociado.
-        documento_path (str): Ruta completa donde está el documento.
-        documento_nombre (str): Nombre del documento.
-        destinatarios (list): Lista de diccionarios con 'nombre' y 'email'.
-    """
+   """
     try:
-        logging.info(f"firma_cierre.py - Iniciando envío de documento firmado para issue {issue_id}")
+        logging.info(f"firma_cierre.py - Iniciando envío de documento firmado para issue")
+        logging.info(f"firma_cierre.py - issue_id: {issue_id}")
+        logging.info(f"firma_cierre.py - documento_path: {documento_path}")
+        logging.info(f"firma_cierre.py - documento_nombre: {documento_nombre}")
 
         for destinatario in destinatarios:
             nombre = destinatario.get('nombre')
