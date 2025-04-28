@@ -102,6 +102,53 @@ def get_custom_values_from_db(customized_id, customized_type):
     conn.close()
     return rows
 
+def get_firmante_from_db(issue_id):
+    conn = mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
+    )
+    cursor = conn.cursor(dictionary=True)
+    query = """
+		select 
+		concat(users.firstname,' ',users.lastname) as nombre_responsable,
+		email_addresses.address as email_responsable,
+		custom_values.value as rut_responsable 
+		from issues
+		inner join members on members.project_id = issues.project_id
+		inner join member_roles on member_roles.member_id=members.id
+		inner join roles on roles.id = member_roles.role_id and roles.name = 'Firmante'
+		inner join users on users.id = members.user_id
+		inner join email_addresses on email_addresses.user_id = members.user_id
+		inner join custom_values on customized_id = members.user_id and custom_values.custom_field_id=205 and custom_values.customized_type='Principal'
+		where issues.id = %s;
+    """
+    cursor.execute(query, (issue_id))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
+
+def get_firmante(issue_id, force_reload=False):
+    """
+    Retorna los valores customizados desde caché o desde base de datos si no están en caché.
+    """
+    key = f"{issue_id}"
+    cache = load_custom_values_cache()
+
+    if not force_reload and key in cache:
+        return cache[key]
+
+    logging.info(f"redmine_cache_sql.py - Consultando DB por custom_values para {key}...")
+    data = get_firmante_from_db(issue_id)
+
+    if data:
+        cache[key] = data
+        save_custom_values_cache(cache)
+
+    return data
+
 def get_custom_values(customized_id, customized_type, force_reload=False):
     """
     Retorna los valores customizados desde caché o desde base de datos si no están en caché.
