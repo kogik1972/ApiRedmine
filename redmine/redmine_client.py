@@ -78,7 +78,7 @@ def obtener_emails_desde_redmine(issue_id):
         email_firmante = None
         rut_responsable = None
         nombre_responsable = None
-        campos = get_firmante(resultado['id'], "Issue")
+        campos = get_firmante(resultado['id'])
         for campo in campos:
             if campo['field_name'] == 'email_firmante':
                 email_responsable = campo['value']
