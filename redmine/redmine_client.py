@@ -85,13 +85,13 @@ def obtener_emails_desde_redmine(issue_id):
             elif campo['field_name'] == 'nombre_responsable':
                 nombre_responsable = campo['value']
 
-        logging.info(f"redmine_client.py - email_firmante: {email_firmante}")
+        logging.info(f"redmine_client.py - email_firmante: {email_responsable}")
         logging.info(f"redmine_client.py - rut_responsable: {rut_responsable}")
         logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable}")
 
 
         if not email_firmante or not rut_responsable or not nombre_responsable:
-            logging.info(f"redmine_client.py - email_firmante: {email_firmante} no encontrado.")
+            logging.info(f"redmine_client.py - email_firmante: {email_responsable} no encontrado.")
             logging.info(f"redmine_client.py - rut_responsable: {rut_responsable} no encontrado.")
             logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable} no encontrado.")
             return None
