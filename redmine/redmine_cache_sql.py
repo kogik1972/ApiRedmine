@@ -132,7 +132,7 @@ def get_firmante_from_db(issue_id):
     conn.close()
     return rows
 
-def get_firmante(issue_id, force_reload=False):
+def get_firmante(issue_id, force_reload=True):
     """
     Retorna los valores customizados desde caché o desde base de datos si no están en caché.
     """
