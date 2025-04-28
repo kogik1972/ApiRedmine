@@ -88,7 +88,15 @@ def main():
             logging.info(f"core_firma.py - token: {token}")
 
             firmante = documento.firmas[-1]
-            enviar_correo_firma(firmante, documento)
+
+            # 1. Registrar el documento en la base
+            documento_paso = Documento(
+            nombre=nombre_final,
+            path_pdf=os.path.join(args.directorio, ''),
+            issue_id=args.issue_id
+            )
+
+            enviar_correo_firma(firmante, documento_paso)
 
         logging.info(f"core_firma.py - Documento registrado en BD con ID {documento.id}")
         logging.info(f"core_firma.py - Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
