@@ -74,7 +74,8 @@ def procesar_respuesta():
         nombre_documento = documento.nombre
         path_documento = documento.path_pdf
         firmas_requeridas = [f for f in documento.firmas]
-        destinatarios = [f.email for f in documento.firmas]
+        #destinatarios = [f.email for f in documento.firmas]
+        destinatarios = [{'nombre': f.nombre, 'email': f.email} for f in documento.firmas]
 
         logging.info(f"respuestas.py - issue_id: {issue_id}")
         logging.info(f"respuestas.py - nombre_documento: {nombre_documento}")
