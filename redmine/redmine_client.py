@@ -75,7 +75,7 @@ def obtener_emails_desde_redmine(issue_id):
             return None
 
 #       OBTENGO INFORMACION RESPONSABLE FIRMA
-        email_firmante = None
+        email_responsable = None
         rut_responsable = None
         nombre_responsable = None
         campos = get_firmante(resultado['id'])
