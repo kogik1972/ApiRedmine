@@ -42,30 +42,8 @@ def obtener_emails_desde_redmine(issue_id):
         # email_responsable = campos_padre.get("eMail_Administrador")
         # rut_responsable = campos_padre.get("RUT_Rep_Legal_Administrador")
         # nombre_responsable = campos_padre.get("Nombre_Rep_Legal_Administrador")
-        email_firmante = None
-        rut_responsable = None
-        nombre_responsable = None
-        campos = get_firmante(resultado['id'], "Issue")
-        for campo in campos:
-            if campo['field_name'] == 'email_firmante':
-                email_responsable = campo['value']
-            elif campo['field_name'] == 'rut_responsable':
-                rut_responsable = campo['value']
-            elif campo['field_name'] == 'nombre_responsable':
-                nombre_responsable = campo['value']
-
-        logging.info(f"redmine_client.py - email_firmante: {email_firmante}")
-        logging.info(f"redmine_client.py - rut_responsable: {rut_responsable}")
-        logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable}")
-
-
-        if not email_firmante or not rut_responsable or not nombre_responsable:
-            logging.info(f"redmine_client.py - email_firmante: {email_firmante} no encontrado.")
-            logging.info(f"redmine_client.py - rut_responsable: {rut_responsable} no encontrado.")
-            logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable} no encontrado.")
-            return None
                 
-
+#       OBTENGO INFORMACION TRABAJADOR FIRMA
         data = get_json(f"projects/{id_proyecto}.json?include=custom_fields")
         campos_proyecto = {campo["name"]: campo["value"] for campo in data["project"]["custom_fields"]}
         nombre_comunidad = f"RUT_{campos_proyecto.get('Comunidad')}"
@@ -92,6 +70,30 @@ def obtener_emails_desde_redmine(issue_id):
 
         if not email_firmante:
             logging.info(f"redmine_client.py - Email del firmante no encontrado.")
+            return None
+
+#       OBTENGO INFORMACION RESPONSABLE FIRMA
+        email_firmante = None
+        rut_responsable = None
+        nombre_responsable = None
+        campos = get_firmante(resultado['id'], "Issue")
+        for campo in campos:
+            if campo['field_name'] == 'email_firmante':
+                email_responsable = campo['value']
+            elif campo['field_name'] == 'rut_responsable':
+                rut_responsable = campo['value']
+            elif campo['field_name'] == 'nombre_responsable':
+                nombre_responsable = campo['value']
+
+        logging.info(f"redmine_client.py - email_firmante: {email_firmante}")
+        logging.info(f"redmine_client.py - rut_responsable: {rut_responsable}")
+        logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable}")
+
+
+        if not email_firmante or not rut_responsable or not nombre_responsable:
+            logging.info(f"redmine_client.py - email_firmante: {email_firmante} no encontrado.")
+            logging.info(f"redmine_client.py - rut_responsable: {rut_responsable} no encontrado.")
+            logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable} no encontrado.")
             return None
 
         return {
