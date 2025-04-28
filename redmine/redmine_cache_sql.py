@@ -140,7 +140,7 @@ def get_firmante(issue_id, force_reload=False):
     if not force_reload and key in cache:
         return cache[key]
 
-    logging.info(f"redmine_cache_sql.py - Consultando DB por custom_values para {key}...")
+    logging.info(f"redmine_cache_sql.py - Consultando DB por get_firmante para {key}...")
     data = get_firmante_from_db(issue_id)
 
     if data:
