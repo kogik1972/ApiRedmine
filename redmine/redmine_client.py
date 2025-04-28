@@ -48,7 +48,7 @@ def obtener_emails_desde_redmine(issue_id):
         campos = get_firmante(resultado['id'], "Issue")
         for campo in campos:
             if campo['field_name'] == 'email_firmante':
-                email_firmante = campo['value']
+                email_responsable = campo['value']
             elif campo['field_name'] == 'rut_responsable':
                 rut_responsable = campo['value']
             elif campo['field_name'] == 'nombre_responsable':
@@ -59,7 +59,7 @@ def obtener_emails_desde_redmine(issue_id):
         logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable}")
 
 
-        if not email_firmante || not rut_responsable || not nombre_responsable:
+        if not email_firmante or not rut_responsable or not nombre_responsable:
             logging.info(f"redmine_client.py - email_firmante: {email_firmante} no encontrado.")
             logging.info(f"redmine_client.py - rut_responsable: {rut_responsable} no encontrado.")
             logging.info(f"redmine_client.py - nombre_responsable: {nombre_responsable} no encontrado.")
