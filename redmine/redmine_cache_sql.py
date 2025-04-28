@@ -126,7 +126,7 @@ def get_firmante_from_db(issue_id):
 		inner join custom_values on customized_id = members.user_id and custom_values.custom_field_id=205 and custom_values.customized_type='Principal'
 		where issues.id = %s;
     """
-    cursor.execute(query, (issue_id))
+    cursor.execute(query, (issue_id,))
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
