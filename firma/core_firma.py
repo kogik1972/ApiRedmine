@@ -77,27 +77,24 @@ def main():
         db.session.add(documento)
         db.session.commit()
 
-        # 2. Registrar cada firmante y enviar correo
         for tipo, persona in datos_firmantes.items():
-            token = registrar_firmante(
+            resultado = registrar_firmante(
                 documento_id=documento.id,
                 nombre=persona["nombre"],
                 rut=persona["rut"],
                 email=persona["email"],
                 tipo=tipo
             )
-            logging.info(f"core_firma.py - token: {token}")
 
-            firmante = documento.firmas[-1]
+            firma = resultado["firma"]
+            link_aceptar = resultado["link_aceptar"]
+            link_rechazar = resultado["link_rechazar"]
 
-            # 1. Registrar el documento en la base
-            documento_paso = Documento(
-            nombre=nombre_final,
-            path_pdf=os.path.join(args.directorio, ''),
-            issue_id=args.issue_id
-            )
+            logging.info(f"core_firma.py - link aceptar: {link_aceptar}")
+            logging.info(f"core_firma.py - link rechazar: {link_rechazar}")
 
-            enviar_correo_firma(firmante, documento_paso)
+            # Acá usas firma directamente, no documento.firmas[-1]
+            enviar_correo_firma(firma, documento, link_aceptar, link_rechazar)
 
         logging.info(f"core_firma.py - Documento registrado en BD con ID {documento.id}")
         logging.info(f"core_firma.py - Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
