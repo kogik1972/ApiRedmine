@@ -38,11 +38,10 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo):
         rut=rut,
         email=email,
         tipo=tipo,
-        estado='pendiente',
-        token='relleno'  # será reemplazado después
+        estado='pendiente'
     )
     db.session.add(firma)
-    db.session.commit()  # Necesario para obtener firma.id
+    db.session.flush()  # ⚡ OJO: flush() para obtener firma.id SIN commitear aún
 
     token_aceptar = serializer.dumps({"firma_id": firma.id, "accion": "aceptar"})
     token_rechazar = serializer.dumps({"firma_id": firma.id, "accion": "rechazar"})
