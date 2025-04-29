@@ -33,19 +33,9 @@ def create_mail_app():
     mail.init_app(app)
     return app
 
-
-def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
-    """Envía un correo con los enlaces únicos de firma y rechazo para un firmante."""
-    # ✅ Precarga los datos necesarios antes de perder la sesión de SQLAlchemy
-    nombre_firmante = firma.nombre
-    rut_firmante = firma.rut
-    tipo_firmante = firma.tipo
-    email_firmante = firma.email
-    nombre_documento = documento.nombre
-
-    doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
-    doc_path_nombre = os.path.abspath(os.path.join(doc_path, nombre_documento))
-
+def enviar_correo_firma(nombre_firmante, rut_firmante, tipo_firmante, email_firmante,
+                        nombre_documento, path_documento, link_aceptar, link_rechazar):
+    """Envía un correo con los enlaces únicos de firma y rechazo para un firmante (sin depender de SQLAlchemy)."""
     app = create_mail_app()
 
     with app.app_context():
@@ -105,8 +95,8 @@ El equipo de Condominium
             body=cuerpo_texto
         )
 
-        if os.path.exists(doc_path_nombre):
-            with open(doc_path_nombre, "rb") as file:
+        if os.path.exists(path_documento):
+            with open(path_documento, "rb") as file:
                 msg.attach(
                     filename=nombre_documento,
                     content_type="application/pdf",
@@ -114,10 +104,11 @@ El equipo de Condominium
                 )
                 logging.info(f"firma_mailer.py - Documento adjunto: {nombre_documento}")
         else:
-            logging.warning(f"firma_mailer.py - Documento NO encontrado para adjuntar: {doc_path_nombre}")
+            logging.warning(f"firma_mailer.py - Documento NO encontrado para adjuntar: {path_documento}")
 
         mail.send(msg)
         logging.info(f"firma_mailer.py - Correo enviado a: {destinatario}")
+
 
 def enviar_docx_final(nombre, email, documento_path, documento_nombre):
     """
