@@ -12,12 +12,8 @@ from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
 
-# Librerías para CLI y entorno
 import argparse
 
-#from dotenv import load_dotenv
-
-# Funciones internas del sistema
 from scripts.archivo_manager import mover_a_docs
 from redmine.redmine_client import obtener_emails_desde_redmine
 from app import create_app, db
@@ -26,7 +22,6 @@ from firma.firma_utils import registrar_firmante
 from firma.firma_mailer import enviar_correo_firma
 
 def parse_args():
-    """Parsea los argumentos requeridos para ejecutar el script."""
     parser = argparse.ArgumentParser(description="Core de orquestación del proceso de firma electrónica.")
     parser.add_argument('--issue_id', type=int, required=True, help='ID del issue en Redmine')
     parser.add_argument('--directorio', type=str, required=True, help='Directorio donde se generó el archivo')
@@ -34,73 +29,62 @@ def parse_args():
     return parser.parse_args()
 
 def main():
-    logging.info(f'Punto de entrada principal del proceso de firma electrónica.')
+    logging.info('Punto de entrada principal del proceso de firma electrónica.')
 
     args = parse_args()
-
-    # Crea instancia Flask y configura conexión a base de datos
     app = create_app()
 
-    # Asegura que la base y el contexto estén disponibles
     with app.app_context():
-        db.create_all()  # Se asegura que las tablas existen (no recrea si ya están)
+        db.create_all()
 
-    # Construye la ruta completa al archivo original
     ruta_original = os.path.join(ROOT_DIR, args.directorio, args.nombre_documento)
 
     if not os.path.isfile(ruta_original):
-        logging.error(f"core_firma.py - Archivo no encontrado: {ruta_original}")
+        logging.error(f"Archivo no encontrado: {ruta_original}")
         return
 
-    logging.info(f'core_firma.py - args.issue_id: {args.issue_id}')
-    logging.info(f'core_firma.py - args.directorio: {args.directorio}')
-    logging.info(f'core_firma.py - args.nombre_documento: {args.nombre_documento}')
+    logging.info(f"args.issue_id: {args.issue_id}")
+    logging.info(f"args.directorio: {args.directorio}")
+    logging.info(f"args.nombre_documento: {args.nombre_documento}")
 
-    # Mueve el archivo a la carpeta /docs/, evitando colisiones
     ruta_final, nombre_final = mover_a_docs(ruta_original, args.nombre_documento)
-    logging.info(f'core_firma.py - ruta_final: {ruta_final}')
-    logging.info(f'core_firma.py - nombre_final: {nombre_final}')
+    logging.info(f"ruta_final: {ruta_final}")
+    logging.info(f"nombre_final: {nombre_final}")
 
-    # Obtiene los firmantes desde Redmine a través del issue_id
     datos_firmantes = obtener_emails_desde_redmine(args.issue_id)
     if not datos_firmantes:
-        logging.error("core_firma.py - No se pudieron obtener los datos de los firmantes. Proceso abortado.")
+        logging.error("No se pudieron obtener los datos de los firmantes. Proceso abortado.")
         return
 
     with app.app_context():
-        # 1. Registrar el documento en la base
         documento = Documento(
-            nombre=args.nombre_documento,
+            nombre=nombre_final,
             path_pdf=os.path.join(args.directorio, ''),
             issue_id=args.issue_id
         )
         db.session.add(documento)
         db.session.commit()
 
-        # 2. Registrar cada firmante y enviar correo
         for tipo, persona in datos_firmantes.items():
-            token = registrar_firmante(
+            resultado = registrar_firmante(
                 documento_id=documento.id,
                 nombre=persona["nombre"],
                 rut=persona["rut"],
                 email=persona["email"],
                 tipo=tipo
             )
-            logging.info(f"core_firma.py - token: {token}")
 
-            firmante = documento.firmas[-1]
+            firma = resultado["firma"]
+            link_aceptar = resultado["link_aceptar"]
+            link_rechazar = resultado["link_rechazar"]
 
-            # 1. Registrar el documento en la base
-            documento_paso = Documento(
-            nombre=nombre_final,
-            path_pdf=os.path.join(args.directorio, ''),
-            issue_id=args.issue_id
-            )
+            logging.info(f"Link aceptar: {link_aceptar}")
+            logging.info(f"Link rechazar: {link_rechazar}")
 
-            enviar_correo_firma(firmante, documento_paso)
+            enviar_correo_firma(firma, documento, link_aceptar, link_rechazar)
 
-        logging.info(f"core_firma.py - Documento registrado en BD con ID {documento.id}")
-        logging.info(f"core_firma.py - Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
+        logging.info(f"Documento registrado en BD con ID {documento.id}")
+        logging.info(f"Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
 
 if __name__ == '__main__':
     main()
