@@ -30,8 +30,9 @@ def create_mail_app():
 
 def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
     """Envía un correo con los enlaces únicos de firma y rechazo para un firmante."""
-    app = create_mail_app()
+    logging.info(f"firma_mailer.py - Documento adjunto: {documento.nombre}")
 
+    app = create_mail_app()
     with app.app_context():
         asunto = f"Firma requerida: {documento.nombre}"
         destinatario = firma.email
@@ -68,6 +69,9 @@ def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
         </body>
         </html>
         """
+        logging.info(f"firma_mailer.py - firma.nombre: {firma.nombre}")
+        logging.info(f"firma_mailer.py - firma.rut: {firma.rut}")
+        logging.info(f"firma_mailer.py - Documento adjunto: {documento.nombre}")
 
         cuerpo_texto = f"""Estimado/a {firma.nombre} ({firma.rut}),
 
