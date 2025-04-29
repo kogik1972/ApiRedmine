@@ -32,22 +32,24 @@ def crear_link_firma(token, accion):
 def registrar_firmante(documento_id, nombre, rut, email, tipo):
     from db.db_models import FirmaRequerida
 
+    firma_uuid = str(uuid.uuid4())
+    token_aceptar = serializer.dumps({"firma_uuid": firma_uuid, "accion": "aceptar"})
+    token_rechazar = serializer.dumps({"firma_uuid": firma_uuid, "accion": "rechazar"})
+
     firma = FirmaRequerida(
         documento_id=documento_id,
         nombre=nombre,
         rut=rut,
         email=email,
         tipo=tipo,
-        estado='pendiente'
+        estado='pendiente',
+        token = token_aceptar  
     )
     db.session.add(firma)
-    db.session.flush()  # ⚡ OJO: flush() para obtener firma.id SIN commitear aún
+    db.session.commit()  # ⚡ OJO: flush() para obtener firma.id SIN commitear aún
 
     token_aceptar = serializer.dumps({"firma_id": firma.id, "accion": "aceptar"})
     token_rechazar = serializer.dumps({"firma_id": firma.id, "accion": "rechazar"})
-
-    firma.token = token_aceptar
-    db.session.commit()
 
     return {
         "firma": firma,
