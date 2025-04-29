@@ -34,14 +34,11 @@ def create_mail_app():
     return app
 
 
-def enviar_correo_firma(firma, documento):
-    """Envia un correo con los enlaces únicos de firma y rechazo para un firmante."""
+def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
+    """Envía un correo con los enlaces únicos de firma y rechazo para un firmante."""
     app = create_mail_app()
 
     with app.app_context():
-        link_aceptar = crear_link_firma(firma.token, 'aceptar')
-        link_rechazar = crear_link_firma(firma.token, 'rechazar')
-
         asunto = f"Firma requerida: {documento.nombre}"
         destinatario = firma.email
 
@@ -98,16 +95,8 @@ El equipo de Condominium
             body=cuerpo_texto
         )
 
-        # Adjuntar el archivo al correo
-        #doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
-        
         doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
         doc_path_nombre = os.path.abspath(os.path.join(doc_path, documento.nombre))
-
-        logging.info(f"firma_mailer.py - doc_path: {doc_path}")
-        logging.info(f"firma_mailer.py - doc_path_nombre: {doc_path_nombre}")
-        logging.info(f"firma_mailer.py - documento.path_pdf: {documento.path_pdf}")
-        logging.info(f"firma_mailer.py - documento.nombre: {documento.nombre}")
 
         if os.path.exists(doc_path_nombre):
             with open(doc_path_nombre, "rb") as file:
@@ -118,7 +107,7 @@ El equipo de Condominium
                 )
                 logging.info(f"firma_mailer.py - Documento adjunto: {documento.nombre}")
         else:
-            logging.info(f"firma_mailer.py - Advertencia: No se encontró el documento a adjuntar: {doc_path}")
+            logging.warning(f"firma_mailer.py - Documento NO encontrado para adjuntar: {doc_path_nombre}")
 
         mail.send(msg)
         logging.info(f"firma_mailer.py - Correo enviado a: {destinatario}")
