@@ -47,8 +47,8 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo):
     token_aceptar = serializer.dumps({"firma_id": firma.id, "accion": "aceptar"})
     token_rechazar = serializer.dumps({"firma_id": firma.id, "accion": "rechazar"})
 
-    #firma.token = token_aceptar
-    #db.session.commit()
+    firma.token = token_aceptar
+    db.session.commit()
 
     return {
         "firma": firma,
