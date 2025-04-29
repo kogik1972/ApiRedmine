@@ -1,18 +1,13 @@
-# firma/firma_mailer.py
-
 import os
 from flask import Flask
 from flask_mail import Mail, Message
-from firma.firma_utils import crear_link_firma
 import smtplib
 from email.message import EmailMessage
+mail = Mail()  # Extensión global
 
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
-
-
-mail = Mail()  # Extensión global
 
 def create_mail_app():
     """Crea una app mínima para el envío de correos usando Flask-Mail."""
@@ -33,15 +28,11 @@ def create_mail_app():
     mail.init_app(app)
     return app
 
-
-def enviar_correo_firma(firma, documento):
-    """Envia un correo con los enlaces únicos de firma y rechazo para un firmante."""
+def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
+    """Envía un correo con los enlaces únicos de firma y rechazo para un firmante."""
     app = create_mail_app()
 
     with app.app_context():
-        link_aceptar = crear_link_firma(firma.token, 'aceptar')
-        link_rechazar = crear_link_firma(firma.token, 'rechazar')
-
         asunto = f"Firma requerida: {documento.nombre}"
         destinatario = firma.email
 
@@ -98,16 +89,8 @@ El equipo de Condominium
             body=cuerpo_texto
         )
 
-        # Adjuntar el archivo al correo
-        #doc_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', documento.path_pdf))
-        
         doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
         doc_path_nombre = os.path.abspath(os.path.join(doc_path, documento.nombre))
-
-        logging.info(f"firma_mailer.py - doc_path: {doc_path}")
-        logging.info(f"firma_mailer.py - doc_path_nombre: {doc_path_nombre}")
-        logging.info(f"firma_mailer.py - documento.path_pdf: {documento.path_pdf}")
-        logging.info(f"firma_mailer.py - documento.nombre: {documento.nombre}")
 
         if os.path.exists(doc_path_nombre):
             with open(doc_path_nombre, "rb") as file:
@@ -118,44 +101,33 @@ El equipo de Condominium
                 )
                 logging.info(f"firma_mailer.py - Documento adjunto: {documento.nombre}")
         else:
-            logging.info(f"firma_mailer.py - Advertencia: No se encontró el documento a adjuntar: {doc_path}")
+            logging.warning(f"firma_mailer.py - Documento NO encontrado para adjuntar: {doc_path_nombre}")
 
         mail.send(msg)
         logging.info(f"firma_mailer.py - Correo enviado a: {destinatario}")
 
-
 def enviar_docx_final(nombre, email, documento_path, documento_nombre):
     """
     Envía un correo electrónico con un documento .docx firmado adjunto.
-
-    Args:
-        nombre (str): Nombre del destinatario.
-        email (str): Email del destinatario.
-        documento_path (str): Ruta donde se encuentra el documento.
-        documento_nombre (str): Nombre del documento a adjuntar.
     """
-
     try:
         logging.info(f"firma_mailer - Iniciando envío de documento firmado a {email}")
 
-        # Configuración SMTP desde variables de entorno
-        servidor_smtp = os.getenv("MAIL_SERVER")  # Ejemplo: "smtp.gmail.com"
-        puerto_smtp = int(os.getenv("MAIL_PORT", 587))  # Puerto estándar TLS
-        email_origen = os.getenv("MAIL_DEFAULT_SENDER")  # Ejemplo: "firma@example.com"
+        servidor_smtp = os.getenv("MAIL_SERVER")
+        puerto_smtp = int(os.getenv("MAIL_PORT", 587))
+        email_origen = os.getenv("MAIL_DEFAULT_SENDER")
         password_origen = os.getenv("MAIL_PASSWORD")
 
         if not all([servidor_smtp, puerto_smtp, email_origen, password_origen]):
             logging.error("firma_mailer - Configuración SMTP incompleta en variables de entorno")
             return False
 
-        # Crear mensaje de correo
         msg = EmailMessage()
         msg['Subject'] = "Documento firmado electrónicamente"
         msg['From'] = email_origen
         msg['To'] = email
         msg.set_content(f"Estimado/a {nombre},\n\nAdjuntamos el documento firmado electrónicamente.\n\nSaludos cordiales.")
 
-        # Cargar y adjuntar el archivo
         ruta_completa = os.path.join(documento_path, documento_nombre)
 
         if not os.path.isfile(ruta_completa):
@@ -173,7 +145,6 @@ def enviar_docx_final(nombre, email, documento_path, documento_nombre):
             filename=file_name
         )
 
-        # Enviar el correo
         with smtplib.SMTP(servidor_smtp, puerto_smtp) as smtp:
             smtp.starttls()
             smtp.login(email_origen, password_origen)
