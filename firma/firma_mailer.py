@@ -36,11 +36,21 @@ def create_mail_app():
 
 def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
     """Envía un correo con los enlaces únicos de firma y rechazo para un firmante."""
+    # ✅ Precarga los datos necesarios antes de perder la sesión de SQLAlchemy
+    nombre_firmante = firma.nombre
+    rut_firmante = firma.rut
+    tipo_firmante = firma.tipo
+    email_firmante = firma.email
+    nombre_documento = documento.nombre
+
+    doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
+    doc_path_nombre = os.path.abspath(os.path.join(doc_path, nombre_documento))
+
     app = create_mail_app()
 
     with app.app_context():
-        asunto = f"Firma requerida: {documento.nombre}"
-        destinatario = firma.email
+        asunto = f"Firma requerida: {nombre_documento}"
+        destinatario = email_firmante
 
         cuerpo_html = f"""
         <html>
@@ -62,9 +72,9 @@ def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
             </style>
         </head>
         <body class="body">
-            <p>Estimado/a <strong>{firma.nombre}</strong> ({firma.rut}),</p>
-            <p>Ha sido asignado como <strong>{firma.tipo}</strong> y se requiere su firma electrónica para el documento:</p>
-            <p><strong>{documento.nombre}</strong></p>
+            <p>Estimado/a <strong>{nombre_firmante}</strong> ({rut_firmante}),</p>
+            <p>Ha sido asignado como <strong>{tipo_firmante}</strong> y se requiere su firma electrónica para el documento:</p>
+            <p><strong>{nombre_documento}</strong></p>
             <div style="margin: 25px 0;">
                 <a href="{link_aceptar}" class="btn btn-aceptar">✅ Aceptar y Firmar</a>
                 <a href="{link_rechazar}" class="btn btn-rechazar">❌ Rechazar Documento</a>
@@ -75,9 +85,9 @@ def enviar_correo_firma(firma, documento, link_aceptar, link_rechazar):
         </html>
         """
 
-        cuerpo_texto = f"""Estimado/a {firma.nombre} ({firma.rut}),
+        cuerpo_texto = f"""Estimado/a {nombre_firmante} ({rut_firmante}),
 
-Ha sido asignado como {firma.tipo} y se requiere su firma electrónica para el documento: {documento.nombre}
+Ha sido asignado como {tipo_firmante} y se requiere su firma electrónica para el documento: {nombre_documento}
 
 ✔️ Firmar: {link_aceptar}
 ❌ Rechazar: {link_rechazar}
@@ -95,23 +105,19 @@ El equipo de Condominium
             body=cuerpo_texto
         )
 
-        doc_path = os.path.abspath(os.path.join('/home/desa/Data/ApiRedmine/', 'docs'))
-        doc_path_nombre = os.path.abspath(os.path.join(doc_path, documento.nombre))
-
         if os.path.exists(doc_path_nombre):
             with open(doc_path_nombre, "rb") as file:
                 msg.attach(
-                    filename=documento.nombre,
+                    filename=nombre_documento,
                     content_type="application/pdf",
                     data=file.read()
                 )
-                logging.info(f"firma_mailer.py - Documento adjunto: {documento.nombre}")
+                logging.info(f"firma_mailer.py - Documento adjunto: {nombre_documento}")
         else:
             logging.warning(f"firma_mailer.py - Documento NO encontrado para adjuntar: {doc_path_nombre}")
 
         mail.send(msg)
         logging.info(f"firma_mailer.py - Correo enviado a: {destinatario}")
-
 
 def enviar_docx_final(nombre, email, documento_path, documento_nombre):
     """
