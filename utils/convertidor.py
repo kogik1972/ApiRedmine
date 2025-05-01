@@ -34,8 +34,8 @@ def convierto_docx2pdf(nombre_documento, path_documento):
 
     except subprocess.CalledProcessError as e:
         logger.critical(f'Ocurrió un error durante la conversión: {e.stderr.decode()}')
-        return 500
+        return "500"
     except Exception as e:
         logger.critical(f'Ocurrió un error: {e}')
-        return 500
+        return "500"
 
