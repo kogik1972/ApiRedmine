@@ -112,6 +112,8 @@ def procesar_respuesta():
                 logging.error(f"respuestas.py - Error al convertir en pdf {nombre_documento}")
                 raise Exception("Error al convertir en pdf")
             
+            logging.error(f"IMPORTANTE: {nombre_documento} {nombre_documento_pdf} {path_documento}")
+
             # 3) Enviar documento firmado
             resultado_envio = enviar_documento_firmado(issue_id, path_documento, nombre_documento_pdf, destinatarios)
             if not resultado_envio:
