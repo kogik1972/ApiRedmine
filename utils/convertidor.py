@@ -20,9 +20,13 @@ def convierto_docx2pdf(nombre_documento, path_documento):
     # Comando para convertir el archivo usando LibreOffice
     command = ['/usr/bin/soffice', '--headless', '--convert-to', 'pdf', docx_path, '--outdir', output_dir]
 
+    # Asegura que el entorno incluya PATHs necesarios para comandos como grep, sed, etc.
+    env = os.environ.copy()
+    env["PATH"] += os.pathsep + "/usr/bin:/bin:/usr/local/bin"
+
     try:
         # Usa LibreOffice para convertir el DOCX a PDF
-        result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
 
         logger.info(f"Stdout: {result.stdout.decode()}")
         logger.info(f"Stderr: {result.stderr.decode()}")
@@ -31,11 +35,9 @@ def convierto_docx2pdf(nombre_documento, path_documento):
         nombre_documento_pdf = f"{nombre_sin_extension}.pdf"
         return os.path.join(output_dir, nombre_documento_pdf)
 
-
     except subprocess.CalledProcessError as e:
         logger.critical(f'Ocurrió un error durante la conversión: {e.stderr.decode()}')
         return "500"
     except Exception as e:
         logger.critical(f'Ocurrió un error: {e}')
         return "500"
-
