@@ -1,25 +1,26 @@
+## estampar_firmas.py
 import os
-import logging
 from docx import Document
-from docx.shared import Pt, Inches, RGBColor
+from docx.shared import Pt, RGBColor
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas):
     try:
-        logging.info(f"estampar_firmas.py - issue_id: {issue_id}")
-        logging.info(f"estampar_firmas.py - nombre_documento: {nombre_documento}")
-        logging.info(f"estampar_firmas.py - path_documento: {path_documento}")
+        logger.info(f"issue_id: {issue_id}")
+        logger.info(f"nombre_documento: {nombre_documento}")
+        logger.info(f"path_documento: {path_documento}")
 
         ruta_completa = os.path.join(path_documento, nombre_documento)
-        logging.info(f"estampar_firmas.py - Abriendo documento para estampado: {ruta_completa}")
+        logger.info(f"Abriendo documento para estampado: {ruta_completa}")
 
         if not os.path.isfile(ruta_completa):
-            logging.error(f"estampar_firmas.py - Documento no encontrado: {ruta_completa}")
+            logger.error(f"Documento no encontrado: {ruta_completa}")
             return False
 
         doc = Document(ruta_completa)
@@ -67,7 +68,7 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
                 run = p.add_run(f"Trabajador: {firmante.nombre} {firmante.rut} {firmante.fecha_firma}")
                 run.font.size = Pt(8)
                 run.font.bold = True
-                run.font.color.rgb = RGBColor(0, 0, 0)  # Negro puro
+                run.font.color.rgb = RGBColor(0, 0, 0)
 
             # Responsable a la derecha
             if responsable:
@@ -76,13 +77,12 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
                 run = p.add_run(f"Empresa: {responsable.nombre} {responsable.rut} {responsable.fecha_firma}")
                 run.font.size = Pt(8)
                 run.font.bold = True
-                run.font.color.rgb = RGBColor(0, 0, 0)  # Negro puro
+                run.font.color.rgb = RGBColor(0, 0, 0)
 
         doc.save(ruta_completa)
-        logging.info(f"estampar_firmas.py - Estampado completado exitosamente para issue_id: {issue_id}")
-
+        logger.info(f"Estampado completado exitosamente para issue_id: {issue_id}")
         return True
 
     except Exception as e:
-        logging.error(f"estampar_firmas.py - Error al estampar firmas: {e}", exc_info=True)
+        logger.error(f"Error al estampar firmas: {e}", exc_info=True)
         return False

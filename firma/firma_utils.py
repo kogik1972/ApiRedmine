@@ -1,5 +1,3 @@
-# firma/firma_utils.py
-
 import os
 from itsdangerous import URLSafeSerializer
 from app import db
@@ -7,6 +5,7 @@ from app import db
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 # Carga configuración del entorno ya inicializada por Flask
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -32,7 +31,7 @@ def crear_link_firma(token, accion):
 def registrar_firmante(documento_id, nombre, rut, email, tipo):
     from db.db_models import FirmaRequerida
     import uuid
-    
+
     firma_uuid = str(uuid.uuid4())
     token_aceptar = serializer.dumps({"firma_uuid": firma_uuid, "accion": "aceptar"})
     token_rechazar = serializer.dumps({"firma_uuid": firma_uuid, "accion": "rechazar"})
@@ -44,7 +43,7 @@ def registrar_firmante(documento_id, nombre, rut, email, tipo):
         email=email,
         tipo=tipo,
         estado='pendiente',
-        token = token_aceptar  
+        token=token_aceptar
     )
     db.session.add(firma)
     db.session.commit()  # ⚡ OJO: flush() para obtener firma.id SIN commitear aún

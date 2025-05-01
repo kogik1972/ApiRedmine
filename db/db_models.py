@@ -6,6 +6,7 @@ tz_cl = pytz.timezone('America/Santiago')
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 class Documento(db.Model):
     __tablename__ = 'documentos'

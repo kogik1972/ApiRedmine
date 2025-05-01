@@ -4,6 +4,7 @@ from utils.config import REDMINE_URL, API_KEY as REDMINE_API_KEY
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 def get_json(path):
     """
@@ -22,10 +23,10 @@ def get_json(path):
         return resp.json()
     
     except requests.HTTPError as e:
-        logging.info(f"api.py - [GET {url}] Error HTTP {e.response.status_code}: {e.response.reason}")
+        logger.info(f"api.py - [GET {url}] Error HTTP {e.response.status_code}: {e.response.reason}")
     except requests.RequestException as e:
-        logging.info(f"api.py - [GET {url}] Error de red o conexión: {e}")
+        logger.info(f"api.py - [GET {url}] Error de red o conexión: {e}")
     except Exception as e:
-        logging.info(f"api.py - [GET {url}] Excepción inesperada: {e}")
+        logger.info(f"api.py - [GET {url}] Excepción inesperada: {e}")
 
     return None

@@ -1,5 +1,4 @@
 ## redmine_cache_sql.py
-
 import os
 import json
 import mysql.connector
@@ -8,6 +7,7 @@ from dotenv import load_dotenv
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 # Cargar variables desde .env
 load_dotenv()
@@ -22,7 +22,6 @@ def ensure_cache_dir_exists():
     """Crea el directorio 'cache/' si no existe."""
     if not os.path.exists(CACHE_DIR):
         os.makedirs(CACHE_DIR)
-
 
 def load_enum_cache():
     """Carga el caché desde disco, o devuelve un dict vacío si no existe."""
@@ -63,7 +62,6 @@ def get_enum_from_db(enum_id):
     conn.close()
     return row
 
-
 def get_enum(enum_id, force_reload=False):
     """
     Retorna una enumeración desde el caché local,
@@ -75,7 +73,7 @@ def get_enum(enum_id, force_reload=False):
     if not force_reload and enum_id_str in cache:
         return cache[enum_id_str]
 
-    logging.info(f"redmine_cache_sql.py - Consultando DB por enumeración ID {enum_id}...")
+    logger.info(f"redmine_cache_sql.py - Consultando DB por enumeración ID {enum_id}...")
     data = get_enum_from_db(enum_id)
 
     if data:
@@ -113,18 +111,20 @@ def get_firmante_from_db(issue_id):
     )
     cursor = conn.cursor(dictionary=True)
     query = """
-		select 
-		concat(users.firstname,' ',users.lastname) as nombre_responsable,
-		email_addresses.address as email_responsable,
-		custom_values.value as rut_responsable 
-		from issues
-		inner join members on members.project_id = issues.project_id
-		inner join member_roles on member_roles.member_id=members.id
-		inner join roles on roles.id = member_roles.role_id and roles.name = 'Firmante'
-		inner join users on users.id = members.user_id
-		inner join email_addresses on email_addresses.user_id = members.user_id
-		inner join custom_values on customized_id = members.user_id and custom_values.custom_field_id=205 and custom_values.customized_type='Principal'
-		where issues.id = %s;
+        SELECT 
+        CONCAT(users.firstname,' ',users.lastname) AS nombre_responsable,
+        email_addresses.address AS email_responsable,
+        custom_values.value AS rut_responsable 
+        FROM issues
+        INNER JOIN members ON members.project_id = issues.project_id
+        INNER JOIN member_roles ON member_roles.member_id = members.id
+        INNER JOIN roles ON roles.id = member_roles.role_id AND roles.name = 'Firmante'
+        INNER JOIN users ON users.id = members.user_id
+        INNER JOIN email_addresses ON email_addresses.user_id = members.user_id
+        INNER JOIN custom_values ON customized_id = members.user_id 
+            AND custom_values.custom_field_id = 205 
+            AND custom_values.customized_type = 'Principal'
+        WHERE issues.id = %s;
     """
     cursor.execute(query, (issue_id,))
     rows = cursor.fetchall()
@@ -142,7 +142,7 @@ def get_firmante(issue_id, force_reload=True):
     if not force_reload and key in cache:
         return cache[key]
 
-    logging.info(f"redmine_cache_sql.py - Consultando DB por get_firmante para {key}...")
+    logger.info(f"redmine_cache_sql.py - Consultando DB por get_firmante para {key}...")
     data = get_firmante_from_db(issue_id)
 
     if data:
@@ -161,7 +161,7 @@ def get_custom_values(customized_id, customized_type, force_reload=False):
     if not force_reload and key in cache:
         return cache[key]
 
-    logging.info(f"redmine_cache_sql.py - Consultando DB por custom_values para {key}...")
+    logger.info(f"redmine_cache_sql.py - Consultando DB por custom_values para {key}...")
     data = get_custom_values_from_db(customized_id, customized_type)
 
     if data:
