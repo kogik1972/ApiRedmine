@@ -1,5 +1,6 @@
-## redmine_cache_sql.py
-## Rutina de apyo SQL a la conversion de archivos pdf al firmar
+## convertidor_sql.py
+## Rutina de apoyo SQL a la conversión de archivos PDF al firmar
+
 import os
 import mysql.connector
 from datetime import datetime
@@ -7,6 +8,7 @@ from datetime import datetime
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -18,7 +20,7 @@ CACHE_FILE_PATH = os.path.join(CACHE_DIR, "enumeraciones_cache.json")
 CUSTOM_VALUES_CACHE_PATH = os.path.join(CACHE_DIR, "custom_values_cache.json")
 
 def actualiza_sql(nombre_documento_docx, nombre_documento_pdf, path_documento):
-    logging.info(f"convertidor_sql.py - : {path_documento} {nombre_documento_docx} {nombre_documento_pdf}")
+    logger.info(f"convertidor_sql.py - : {path_documento} {nombre_documento_docx} {nombre_documento_pdf}")
 
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
@@ -27,30 +29,32 @@ def actualiza_sql(nombre_documento_docx, nombre_documento_pdf, path_documento):
         database=os.getenv("DB_NAME")
     )
 
-#   Modifico name, ¿description?, updated_at, 
-#   Creado por Generado Automatico de Documentos EPROC
     v_fecha = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Actualiza la tabla attachments
     cursor = conn.cursor(dictionary=True)
     query = """
-        update attachments set 
-         filename = %s
-        ,disk_filename = %s
-        ,description = 'Creado y Firmado en Generador Automatico de Documentos EPROC'
-        ,updated_at =  %s
-        where filename = %s
-        and container_type='DriveEntry';
+        UPDATE attachments SET 
+            filename = %s,
+            disk_filename = %s,
+            description = 'Creado y Firmado en Generador Automatico de Documentos EPROC',
+            updated_at = %s
+        WHERE filename = %s
+          AND container_type = 'DriveEntry';
     """
-    cursor.execute(query, (nombre_documento_pdf, nombre_documento_pdf, v_fecha, nombre_documento_docx ))
+    cursor.execute(query, (nombre_documento_pdf, nombre_documento_pdf, v_fecha, nombre_documento_docx))
     cursor.close()
 
-#   Modifico name, ¿description?, updated_at, 
+    # Actualiza la tabla drive_entries
     cursor = conn.cursor(dictionary=True)
     query = """
-        update drive_entries set 
-         name = %s
-        ,description = 'Creado y Firmado en Generador Automatico de Documentos EPROC'
-        ,updated_at =  %s
-        where name = %s;
+        UPDATE drive_entries SET 
+            name = %s,
+            description = 'Creado y Firmado en Generador Automatico de Documentos EPROC',
+            updated_at = %s
+        WHERE name = %s;
     """
-    cursor.execute(query, (nombre_documento_pdf, v_fecha, nombre_documento_docx ))
+    cursor.execute(query, (nombre_documento_pdf, v_fecha, nombre_documento_docx))
     cursor.close()
+
+    conn.close()

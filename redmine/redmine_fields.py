@@ -1,3 +1,4 @@
+## redmine_fields.py
 import os
 import requests
 from dotenv import load_dotenv
@@ -6,6 +7,7 @@ load_dotenv()
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 modo = os.getenv("MODO_ENTORNO", "desarrollo")
 if modo == "produccion":
@@ -24,13 +26,13 @@ def get_json(endpoint):
         "X-Redmine-API-Key": API_KEY
     }
     url = f"{REDMINE_URL.rstrip('/')}/{endpoint.lstrip('/')}"
+
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         return response.json()
     else:
         raise Exception(f"❌ Error {response.status_code} al consultar {url}")
-
 
 def get_all_custom_fields(force_reload=False):
     """Obtiene todos los custom_fields desde Redmine (usa caché por defecto)."""
@@ -42,7 +44,6 @@ def get_all_custom_fields(force_reload=False):
 
     return _cached_custom_fields
 
-
 def get_custom_field_by_name(name, force_reload=False):
     """Devuelve el diccionario completo de un custom_field por su nombre."""
     campos = get_all_custom_fields(force_reload)
@@ -50,7 +51,6 @@ def get_custom_field_by_name(name, force_reload=False):
         if campo.get("name") == name:
             return campo
     return None
-
 
 def get_custom_field_by_id(field_id, force_reload=False):
     """Devuelve el custom_field por su ID numérico."""

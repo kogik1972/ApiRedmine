@@ -1,3 +1,4 @@
+## db_init
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))  # para encontrar `app`
@@ -5,13 +6,14 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))  # para enco
 from utils.logging_config import configurar_logging
 import logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 from app import create_app, db
 app = create_app()
 
 with app.app_context():
-    logging.info(f"db_init.py - Eliminando base si existe...")
+    logger.info(f"Eliminando base si existe...")
     db.drop_all()
-    logging.info(f"db_init.py - Creando base desde cero...")
+    logger.info(f"Creando base desde cero...")
     db.create_all()
-    logging.info(f"db_init.py - Base de datos lista en: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    logger.info(f"Base de datos lista en: {app.config['SQLALCHEMY_DATABASE_URI']}")
