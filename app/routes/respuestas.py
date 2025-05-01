@@ -13,6 +13,8 @@ import logging
 from utils.logging_config import configurar_logging
 configurar_logging()
 
+from utils.convertidor import convierto_docx2pdf
+
 # Cargar variables de entorno
 load_dotenv()
 
@@ -104,13 +106,19 @@ def procesar_respuesta():
                 logging.error(f"respuestas.py - Error al estampar firmas en documento {nombre_documento}")
                 raise Exception("Error al estampar firmas")
 
-            # 2) Enviar documento firmado
-            resultado_envio = enviar_documento_firmado(issue_id, path_documento, nombre_documento, destinatarios)
+            # 2) Transformo documento firmado en pdf
+            nombre_documento_pdf = convierto_docx2pdf(nombre_documento, path_documento) 
+            if not nombre_documento_pdf:
+                logging.error(f"respuestas.py - Error al convertir en pdf {nombre_documento}")
+                raise Exception("Error al convertir en pdf")
+            
+            # 3) Enviar documento firmado
+            resultado_envio = enviar_documento_firmado(issue_id, path_documento, nombre_documento_pdf, destinatarios)
             if not resultado_envio:
-                logging.error(f"respuestas.py - Error al enviar documento firmado {nombre_documento}")
+                logging.error(f"respuestas.py - Error al enviar documento firmado {nombre_documento_pdf}")
                 raise Exception("Error al enviar documento firmado")
 
-            # 3) Cerrar issue en Redmine
+            # 4) Cerrar issue en Redmine
             resultado_cierre = cerrar_issue_firma(issue_id, "firmado")
             if not resultado_cierre:
                 logging.error(f"respuestas.py - Error al cerrar issue {issue_id} en Redmine tras firma")
