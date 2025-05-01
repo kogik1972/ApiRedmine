@@ -1,5 +1,6 @@
-from docx2pdf import convert
+## convertidor.py
 import os
+import subprocess
 
 from utils.logging_config import configurar_logging
 import logging
@@ -8,21 +9,26 @@ logger = logging.getLogger(__name__)
 
 def convierto_docx2pdf(nombre_documento, path_documento):
     docx_path = os.path.join(path_documento, nombre_documento)
-    
+
     if not os.path.isfile(docx_path):
         logger.warning(f"Archivo no encontrado: {docx_path}")
         return None
-    
-    # Nombre para el archivo PDF
-    nombre_sin_extension = os.path.splitext(nombre_documento)[0]
-    pdf_path = os.path.join(path_documento, f"{nombre_sin_extension}.pdf")
-    
-    try:
-        convert(docx_path, pdf_path)
-        logger.info(f"Archivo convertido exitosamente: {pdf_path}")
-    except Exception as e:
-        logger.error(f"Error al convertir el documento: {e}", exc_info=True)
-        return None
 
-    nombre_documento_pdf = f"{nombre_sin_extension}.pdf"
-    return nombre_documento_pdf
+    try:
+        # Usa LibreOffice para convertir el DOCX a PDF
+        subprocess.run([
+            "libreoffice",
+            "--headless",
+            "--convert-to", "pdf",
+            "--outdir", path_documento,
+            docx_path
+        ], check=True)
+
+        nombre_sin_extension = os.path.splitext(nombre_documento)[0]
+        nombre_documento_pdf = f"{nombre_sin_extension}.pdf"
+        logger.info(f"Archivo convertido exitosamente: {nombre_documento_pdf}")
+        return nombre_documento_pdf
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error al convertir el documento con LibreOffice: {e}", exc_info=True)
+        return None
