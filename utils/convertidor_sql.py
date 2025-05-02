@@ -37,12 +37,11 @@ def actualiza_sql(nombre_documento_docx, nombre_documento_pdf, path_documento):
         UPDATE attachments SET 
             filename = %s,
             disk_filename = %s,
-            description = 'Creado y Firmado en Generador Automatico de Documentos EPROC',
-            updated_at = %s
+            description = 'Creado y Firmado en Generador Automatico de Documentos EPROC'
         WHERE filename = %s
           AND container_type = 'DriveEntry';
     """
-    cursor.execute(query, (nombre_documento_pdf, nombre_documento_pdf, v_fecha, nombre_documento_docx))
+    cursor.execute(query, (nombre_documento_pdf, nombre_documento_pdf, nombre_documento_docx))
     cursor.close()
 
     # Actualiza la tabla drive_entries
