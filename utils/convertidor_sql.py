@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 from dotenv import load_dotenv
 load_dotenv()
 
-# Directorio y archivo donde se guardará el caché
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 CACHE_FILE_PATH = os.path.join(CACHE_DIR, "enumeraciones_cache.json")
@@ -42,6 +41,7 @@ def actualiza_sql(nombre_documento_docx, nombre_documento_pdf, path_documento):
           AND container_type = 'DriveEntry';
     """
     cursor.execute(query, (nombre_documento_pdf, nombre_documento_pdf, nombre_documento_docx))
+    conn.commit()  # ✅ commit explícito
     cursor.close()
 
     # Actualiza la tabla drive_entries
@@ -54,8 +54,8 @@ def actualiza_sql(nombre_documento_docx, nombre_documento_pdf, path_documento):
         WHERE name = %s;
     """
     cursor.execute(query, (nombre_documento_pdf, v_fecha, nombre_documento_docx))
+    conn.commit()  # ✅ commit explícito
     cursor.close()
 
     conn.close()
-
     return "200"
