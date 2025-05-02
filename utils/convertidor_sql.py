@@ -58,3 +58,5 @@ def actualiza_sql(nombre_documento_docx, nombre_documento_pdf, path_documento):
     cursor.close()
 
     conn.close()
+
+    return "200"
