@@ -33,7 +33,7 @@ def convierto_docx2pdf(nombre_documento, path_documento):
 
         nombre_sin_extension = os.path.splitext(nombre_documento)[0]
         nombre_documento_pdf = f"{nombre_sin_extension}.pdf"
-        return os.path.join(output_dir, nombre_documento_pdf)
+        return nombre_documento_pdf
 
     except subprocess.CalledProcessError as e:
         logger.critical(f'Ocurrió un error durante la conversión: {e.stderr.decode()}')
