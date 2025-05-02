@@ -14,6 +14,7 @@ from utils.logging_config import configurar_logging
 configurar_logging()
 
 from utils.convertidor import convierto_docx2pdf
+from utils.convertidor_sql import actualiza_sql
 
 # Cargar variables de entorno
 load_dotenv()
@@ -112,7 +113,8 @@ def procesar_respuesta():
                 logging.error(f"respuestas.py - Error al convertir en pdf {nombre_documento}")
                 raise Exception("Error al convertir en pdf")
             
-            logging.error(f"IMPORTANTE: {nombre_documento} {nombre_documento_pdf} {path_documento}")
+            resultado = actualiza_sql(nombre_documento, nombre_documento_pdf, path_documento)
+            logging.info(f"IMPORTANTE: {resultado} {nombre_documento} {nombre_documento_pdf} {path_documento}")
 
             # 3) Enviar documento firmado
             resultado_envio = enviar_documento_firmado(issue_id, path_documento, nombre_documento_pdf, destinatarios)
