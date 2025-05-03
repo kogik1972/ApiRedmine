@@ -1,110 +1,68 @@
-## estampar_firmas.py
 import os
-from docx import Document
-from docx.shared import Pt, RGBColor
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
+import logging
+from PyPDF2 import PdfReader, PdfWriter
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
 
 from utils.logging_config import configurar_logging
-import logging
 configurar_logging()
 logger = logging.getLogger(__name__)
 
-def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas, token_documento):
+def estampar_firmas_pdf(issue_id, nombre_documento, path_documento, firmas_requeridas, token_documento):
     try:
-        logger.info(f"issue_id: {issue_id}")
-        logger.info(f"nombre_documento: {nombre_documento}")
-        logger.info(f"path_documento: {path_documento}")
-        logger.info(f"token_documento: {token_documento}")
-
+        logger.info(f"Estampando PDF para issue_id: {issue_id}")
         ruta_completa = os.path.join(path_documento, nombre_documento)
-        logger.info(f"Abriendo documento para estampado: {ruta_completa}")
 
         if not os.path.isfile(ruta_completa):
-            logger.error(f"Documento no encontrado: {ruta_completa}")
+            logger.error(f"Archivo no encontrado: {ruta_completa}")
             return False
 
-        doc = Document(ruta_completa)
-
-        # Organizar firmas por tipo
+        # Extraer firmas
         firmante = next((f for f in firmas_requeridas if f.tipo == 'firmante'), None)
         responsable = next((f for f in firmas_requeridas if f.tipo == 'responsable'), None)
 
-        for section in doc.sections:
-            footer = section.footer
+        # Crear PDF en memoria con firmas y texto
+        packet = BytesIO()
+        can = canvas.Canvas(packet, pagesize=letter)
+        can.setFont("Helvetica", 8)
 
-            # Calcular el ancho útil entre márgenes
-            ancho_total = section.page_width - section.left_margin - section.right_margin
+        if firmante:
+            can.drawString(50, 100, f"Trabajador: {firmante.nombre} {firmante.rut} {firmante.fecha_firma}")
+        if responsable:
+            can.drawRightString(550, 100, f"Empresa: {responsable.nombre} {responsable.rut} {responsable.fecha_firma}")
 
-            # Crear tabla con una fila y dos columnas
-            table = footer.add_table(rows=1, cols=2, width=ancho_total)
-            table.allow_autofit = False
-            table.columns[0].width = ancho_total // 2
-            table.columns[1].width = ancho_total // 2
+        can.setFont("Helvetica-Bold", 10)
+        can.drawString(50, 80, "Este documento fue firmado electrónicamente.")
+        can.setFont("Helvetica-Oblique", 10)
+        can.drawString(50, 65, f"Código de validación: {token_documento}")
+        can.setFont("Helvetica", 10)
+        can.drawString(50, 50, "Puede verificar la autenticidad en:")
+        can.setFillColorRGB(0, 0, 1)  # Azul
+        can.drawString(50, 35, "https://condominium.eproc-chile.cl/validar")
 
-            # Eliminar bordes de la tabla
-            tbl = table._tbl
-            tblPr = tbl.find(qn('w:tblPr')) or OxmlElement('w:tblPr')
-            borders = OxmlElement('w:tblBorders')
-            for border_name in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
-                border = OxmlElement(f'w:{border_name}')
-                border.set(qn('w:val'), 'nil')
-                borders.append(border)
-            existing_borders = tblPr.find(qn('w:tblBorders'))
-            if existing_borders is not None:
-                tblPr.remove(existing_borders)
-            tblPr.append(borders)
-            if tbl.find(qn('w:tblPr')) is None:
-                tbl.insert(0, tblPr)
+        can.save()
+        packet.seek(0)
 
-            row_cells = table.rows[0].cells
+        # Leer PDFs
+        existing_pdf = PdfReader(ruta_completa)
+        overlay_pdf = PdfReader(packet)
+        output = PdfWriter()
 
-            # Firmante a la izquierda
-            if firmante:
-                p = row_cells[0].paragraphs[0]
-                p.alignment = 0  # LEFT
-                run = p.add_run(f"Trabajador: {firmante.nombre} {firmante.rut} {firmante.fecha_firma}")
-                run.font.size = Pt(8)
-                run.font.bold = True
-                run.font.color.rgb = RGBColor(0, 0, 0)
+        for page_num in range(len(existing_pdf.pages)):
+            page = existing_pdf.pages[page_num]
+            if page_num == len(existing_pdf.pages) - 1:
+                # Solo en la última página estampamos
+                page.merge_page(overlay_pdf.pages[0])
+            output.add_page(page)
 
-            # Responsable a la derecha
-            if responsable:
-                p = row_cells[1].paragraphs[0]
-                p.alignment = 2  # RIGHT
-                run = p.add_run(f"Empresa: {responsable.nombre} {responsable.rut} {responsable.fecha_firma}")
-                run.font.size = Pt(8)
-                run.font.bold = True
-                run.font.color.rgb = RGBColor(0, 0, 0)
+        # Guardar PDF modificado
+        with open(ruta_completa, "wb") as outputStream:
+            output.write(outputStream)
 
-        # Insertar sección final con código de validación
-        doc.add_paragraph()  # Separación
-
-        p = doc.add_paragraph()
-        run = p.add_run("Este documento fue firmado electrónicamente.")
-        run.font.size = Pt(10)
-        run.bold = True
-
-        p = doc.add_paragraph()
-        run = p.add_run(f"Código de validación: {token_documento}")
-        run.font.size = Pt(10)
-        run.italic = True
-
-        p = doc.add_paragraph()
-        run = p.add_run("Puede verificar la autenticidad en:")
-        run.font.size = Pt(10)
-
-        p = doc.add_paragraph()
-        run = p.add_run("https://condominium.eproc-chile.cl/validar")
-        run.font.size = Pt(10)
-        run.underline = True
-        run.font.color.rgb = RGBColor(0, 0, 255)
-
-        # Guardar documento modificado
-        doc.save(ruta_completa)
-        logger.info(f"Estampado completado exitosamente para issue_id: {issue_id}")
+        logger.info(f"Estampado PDF completado: {ruta_completa}")
         return True
 
     except Exception as e:
-        logger.error(f"Error al estampar firmas: {e}", exc_info=True)
+        logger.error(f"Error al estampar firmas PDF: {e}", exc_info=True)
         return False

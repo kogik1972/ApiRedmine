@@ -1,4 +1,3 @@
-## responder.pyt
 from flask import Blueprint, render_template, request
 from app import db
 from db.db_models import FirmaRequerida
@@ -12,6 +11,7 @@ import logging
 
 from utils.logging_config import configurar_logging
 configurar_logging()
+logger = logging.getLogger(__name__)
 
 from utils.convertidor import convierto_docx2pdf
 from utils.convertidor_sql import actualiza_sql
@@ -38,23 +38,23 @@ def procesar_respuesta():
         accion = request.args.get("accion")
 
         if not token or not accion:
-            logging.warning("respuestas.py - Faltan parámetros requeridos")
+            logger.warning("Faltan parámetros requeridos")
             return "Faltan parámetros requeridos", 400
 
         data = serializer.loads(token)
         firma_id = data.get("firma_id")
 
         if data.get("accion") != accion:
-            logging.warning("respuestas.py - Acción no coincide con token")
+            logger.warning("Acción no coincide con token")
             return "La acción no coincide con el token", 400
 
         firma = FirmaRequerida.query.get(firma_id)
         if not firma:
-            logging.error(f"respuestas.py - Firma no encontrada: {firma_id}")
+            logger.error(f"Firma no encontrada: {firma_id}")
             return "Firma no encontrada", 404
 
         if firma.estado in ['aceptado', 'rechazado']:
-            logging.info(f"respuestas.py - Firma ya respondida: {firma.estado}")
+            logger.info(f"Firma ya respondida: {firma.estado}")
             return render_template("ya_respondido.html", estado=firma.estado)
 
         # Actualizar estado de la firma
@@ -82,13 +82,14 @@ def procesar_respuesta():
 
         elif all(e == "aceptado" for e in estados):
             documento.estado_firma = "firmado"
+            logger.info(f"nombre_documento: {nombre_documento}")
 
             resultado_estampado = estampar_firmas(
                 issue_id,
                 nombre_documento,
                 path_documento,
                 firmas_requeridas,
-                token_documento  # ✅ ESTÁ AQUI
+                token_documento
             )
             if not resultado_estampado:
                 raise Exception("Error al estampar firmas")
@@ -98,7 +99,7 @@ def procesar_respuesta():
                 raise Exception("Error al convertir en PDF")
 
             resultado = actualiza_sql(nombre_documento, nombre_documento_pdf, path_documento)
-            logging.info(f"actualiza_sql: {resultado} {nombre_documento_pdf}")
+            logger.info(f"actualiza_sql: {resultado} {nombre_documento_pdf}")
 
             resultado_envio = enviar_documento_firmado(
                 issue_id, path_documento, nombre_documento_pdf, destinatarios
@@ -114,5 +115,5 @@ def procesar_respuesta():
         return render_template("gracias.html", estado=firma.estado)
 
     except Exception as e:
-        logging.error(f"respuestas.py - Error: {e}")
+        logger.error(f"Error: {e}", exc_info=True)
         return f"<pre>{traceback.format_exc()}</pre>", 500
