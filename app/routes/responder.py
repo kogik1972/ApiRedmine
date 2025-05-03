@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 serializer = URLSafeSerializer(SECRET_KEY)
 
 # Funciones de procesamiento
-from firmar.estampar_firmas import estampar_firmas
+from firmar.estampar_firmas import estampar_firmas_pdf
 from firmar.firmar_cierre import enviar_documento_firmado
 from redmine.redmine_cierre import cerrar_issue_firma
 
@@ -84,7 +84,7 @@ def procesar_respuesta():
             documento.estado_firma = "firmado"
             logger.info(f"nombre_documento: {nombre_documento}")
 
-            resultado_estampado = estampar_firmas(
+            resultado_estampado = estampar_firmas_pdf(
                 issue_id,
                 nombre_documento,
                 path_documento,
