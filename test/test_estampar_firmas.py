@@ -8,7 +8,7 @@ if ROOT_DIR not in sys.path:
 
 import platform
 import logging
-from firma.estampar_firmas import estampar_firmas
+from firmar.estampar_firmas import estampar_firmas
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documento Validado - Condominium Chile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        img {
+            width: 120px;
+            display: block;
+            margin: 0 auto 15px;
+        }
+
+        h2 {
+            color: #003366;
+            text-align: center;
+        }
+
+        .detalle {
+            margin: 20px 0;
+        }
+
+        .detalle p {
+            margin: 8px 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f5f5f5;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        @media screen and (max-width: 700px) {
+            body {
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='condominium.png') }}" alt="Condominium Chile">
+    <h2>Documento Validado Correctamente</h2>
+
+    <div class="detalle">
+        <p><strong>Nombre del Documento:</strong> {{ documento.nombre }}</p>
+        <p><strong>Estado de la Firma:</strong> {{ documento.estado_firma }}</p>
+        <p><strong>Fecha de Generación:</strong> {{ documento.fecha_generacion }}</p>
+        <p><strong>Código de Validación:</strong> {{ documento.token_documento }}</p>
+    </div>
+
+    <h3>Firmas Registradas</h3>
+    <ul>
+        {% for firma in firmas %}
+            <li>
+                <strong>{{ firma.tipo|capitalize }}:</strong> {{ firma.nombre }}<br>
+                <strong>RUT:</strong> {{ firma.rut }}<br>
+                <strong>Estado:</strong> {{ firma.estado }} {% if firma.fecha_firma %} - {{ firma.fecha_firma }} {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

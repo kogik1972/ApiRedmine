@@ -20,7 +20,7 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 import logging
-from firma.firma_cierre import enviar_documento_firmado
+from firmar.firmar_cierre import enviar_documento_firmado
 
 # Configurar logging básico para test
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
