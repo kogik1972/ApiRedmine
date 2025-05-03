@@ -1,3 +1,4 @@
+## __init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -13,7 +14,9 @@ def create_app():
     templates_path = os.path.join(base_dir, "templates")
 
     # Inicializa Flask con ruta explícita de templates
-    app = Flask(__name__, template_folder=templates_path)
+    #app = Flask(__name__, template_folder=templates_path)
+    static_path = os.path.join(base_dir, "static")
+    app = Flask(__name__, template_folder=templates_path, static_folder=static_path)
 
     # Obtener URI desde el .env
     raw_uri = os.getenv("DATABASE_URL", "sqlite:///instance/firma.db")
@@ -31,8 +34,11 @@ def create_app():
 
     db.init_app(app)
 
-    # 👇 Registro del blueprint
-    from app.routes import respuestas
-    app.register_blueprint(respuestas.respuestas_bp)
+    # 👇 Registro de blueprints
+    from app.routes import responder
+    from app.routes.validar import validar_bp
+
+    app.register_blueprint(responder.respuestas_bp)
+    app.register_blueprint(validar_bp)
 
     return app

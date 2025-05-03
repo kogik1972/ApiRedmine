@@ -10,11 +10,12 @@ import logging
 configurar_logging()
 logger = logging.getLogger(__name__)
 
-def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas):
+def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requeridas, token_documento):
     try:
         logger.info(f"issue_id: {issue_id}")
         logger.info(f"nombre_documento: {nombre_documento}")
         logger.info(f"path_documento: {path_documento}")
+        logger.info(f"token_documento: {token_documento}")
 
         ruta_completa = os.path.join(path_documento, nombre_documento)
         logger.info(f"Abriendo documento para estampado: {ruta_completa}")
@@ -41,23 +42,20 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
             table.columns[0].width = ancho_total // 2
             table.columns[1].width = ancho_total // 2
 
-            # Eliminar bordes de la tabla (XML puro)
+            # Eliminar bordes de la tabla
             tbl = table._tbl
-            tblPr = tbl.find(qn('w:tblPr'))
-            if tblPr is None:
-                tblPr = OxmlElement('w:tblPr')
-                tbl.insert(0, tblPr)
-
+            tblPr = tbl.find(qn('w:tblPr')) or OxmlElement('w:tblPr')
             borders = OxmlElement('w:tblBorders')
             for border_name in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
                 border = OxmlElement(f'w:{border_name}')
                 border.set(qn('w:val'), 'nil')
                 borders.append(border)
-
             existing_borders = tblPr.find(qn('w:tblBorders'))
             if existing_borders is not None:
                 tblPr.remove(existing_borders)
             tblPr.append(borders)
+            if tbl.find(qn('w:tblPr')) is None:
+                tbl.insert(0, tblPr)
 
             row_cells = table.rows[0].cells
 
@@ -79,6 +77,30 @@ def estampar_firmas(issue_id, nombre_documento, path_documento, firmas_requerida
                 run.font.bold = True
                 run.font.color.rgb = RGBColor(0, 0, 0)
 
+        # Insertar sección final con código de validación
+        doc.add_paragraph()  # Separación
+
+        p = doc.add_paragraph()
+        run = p.add_run("Este documento fue firmado electrónicamente.")
+        run.font.size = Pt(10)
+        run.bold = True
+
+        p = doc.add_paragraph()
+        run = p.add_run(f"Código de validación: {token_documento}")
+        run.font.size = Pt(10)
+        run.italic = True
+
+        p = doc.add_paragraph()
+        run = p.add_run("Puede verificar la autenticidad en:")
+        run.font.size = Pt(10)
+
+        p = doc.add_paragraph()
+        run = p.add_run("https://condominium.eproc-chile.cl/validar")
+        run.font.size = Pt(10)
+        run.underline = True
+        run.font.color.rgb = RGBColor(0, 0, 255)
+
+        # Guardar documento modificado
         doc.save(ruta_completa)
         logger.info(f"Estampado completado exitosamente para issue_id: {issue_id}")
         return True

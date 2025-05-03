@@ -1,6 +1,9 @@
 ## core_firma.py
 import sys
 import os
+import secrets
+from datetime import datetime
+import pytz
 
 # Define la raíz absoluta del proyecto para asegurar importaciones correctas
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -15,15 +18,18 @@ logger = logging.getLogger(__name__)
 # Librerías para CLI y entorno
 import argparse
 
-# from dotenv import load_dotenv
-
 # Funciones internas del sistema
 from scripts.archivo_manager import mover_a_docs
 from redmine.redmine_client import obtener_emails_desde_redmine
 from app import create_app, db
 from db.db_models import Documento
-from firma.firma_utils import registrar_firmante
-from firma.firma_mailer import enviar_correo_firma
+from firmar.firmar_utils import registrar_firmante
+from firmar.firmar_mailer import enviar_correo_firma
+
+tz_cl = pytz.timezone('America/Santiago')
+
+def generar_token_documento():
+    return secrets.token_urlsafe(8)  # Ejemplo: 'XJ7Z-4F19'
 
 def parse_args():
     """Parsea los argumentos requeridos para ejecutar el script."""
@@ -68,14 +74,17 @@ def main():
         return
 
     with app.app_context():
-        # 1. Registrar el documento en la base
+        # Registrar el documento en la base con token único
+        token_doc = generar_token_documento()
         documento = Documento(
             nombre=args.nombre_documento,
             path_pdf=os.path.join(args.directorio, ''),
-            issue_id=args.issue_id
+            issue_id=args.issue_id,
+            token_documento=token_doc
         )
         db.session.add(documento)
         db.session.commit()
+        logger.info(f"Documento registrado en BD con ID {documento.id} y token {token_doc}")
 
         for tipo, persona in datos_firmantes.items():
             resultado = registrar_firmante(
@@ -104,7 +113,6 @@ def main():
                 link_rechazar=link_rechazar
             )
 
-        logger.info(f"Documento registrado en BD con ID {documento.id}")
         logger.info(f"Correos enviados a: {', '.join(p['email'] for p in datos_firmantes.values())}")
 
 if __name__ == '__main__':

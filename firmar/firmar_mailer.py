@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask_mail import Mail, Message
-from firma.firma_utils import crear_link_firma
+from firmar.firmar_utils import crear_link_firma
 import smtplib
 from email.message import EmailMessage
 

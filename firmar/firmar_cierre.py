@@ -1,5 +1,5 @@
 ## firma_cierre.py
-from firma.firma_mailer import enviar_docx_final
+from firmar.firmar_mailer import enviar_docx_final
 
 from utils.logging_config import configurar_logging
 import logging

@@ -1,6 +1,8 @@
+## db_models
 from datetime import datetime
 from app import db
 import pytz
+
 tz_cl = pytz.timezone('America/Santiago')
 
 from utils.logging_config import configurar_logging
@@ -17,6 +19,7 @@ class Documento(db.Model):
     fecha_generacion = db.Column(db.DateTime, default=lambda: datetime.now(tz_cl))
     estado_firma = db.Column(db.String(20), default='pendiente')  # pendiente, firmado, rechazado
     issue_id = db.Column(db.Integer, nullable=True, index=True)
+    token_documento = db.Column(db.String(50), unique=True, nullable=True)  # ✅ Campo incorporado correctamente
 
     firmas = db.relationship('FirmaRequerida', backref='documento', lazy=True)
 
