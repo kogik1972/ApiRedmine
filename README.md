@@ -96,4 +96,10 @@ Este sistema permite automatizar el flujo completo de firma electrónica de docu
 
 ✅ Cliente validó el sistema en producción
 
+### Servicios en Linux imprescindibles
+- redmine.service (bootrd): Sube en puerto 3000 a redmine
+- server.service (bootsv): Sube en puerto 5001 el Listener de Generador Documento Server
+- filewatcher.service (bootfw): Sube watcher que vigila creacion de archivo en carpeta Origen
+- backendfirma.service (bootbe): Sube en puerto 5003 el Backend de Firma Electronica
+- webvalfirma.service (bootwv): Sube en puerto 5004 Sitio de Validacion Firma Electronica
 ---
