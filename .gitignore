@@ -9,7 +9,9 @@ __pycache__/
 
 # Entornos virtuales
 venv/
-.env/
+
+.env
+.env_example
 
 # Archivos temporales y logs
 *.log
